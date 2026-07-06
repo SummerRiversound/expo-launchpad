@@ -1,103 +1,164 @@
-# Expo Launchpad
+[English](README.md) · **한국어** · [简体中文](README.zh-CN.md) · [日本語](README.ja.md)
 
-아이디어에서 출시 가능한 iOS·Android 앱·게임까지 — 회의적 QA를 갖춘 Expo(React Native + TypeScript) 기반 AI 하네스.
+<p align="center">
+  <img src="assets/banner.svg" alt="Expo Launchpad" width="100%">
+</p>
+<p align="center">
+  <b>아이디어에서 출시 가능한 iOS + Android 앱 또는 게임까지 — Expo(React Native + TypeScript) 기반의 회의적 QA AI 하네스.</b>
+</p>
 
-> **Status:** 초기 단계 / Phase A(아이디어 → 실행 가능한 빌드)까지만 구현. 실제 앱으로 end-to-end 검증은 아직 안 됨. 배포(EAS + 스토어 제출)는 계획된 Phase B. macOS + Xcode iOS 시뮬레이터 필요.
+<p align="center">
+  <img src="https://img.shields.io/badge/status-alpha-orange" alt="status: alpha">
+  <img src="https://img.shields.io/badge/Claude%20Code-plugin-8A2BE2" alt="Claude Code plugin">
+  <img src="https://img.shields.io/badge/Expo-000020?logo=expo&logoColor=white" alt="Expo">
+  <img src="https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white" alt="TypeScript">
+  <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License: MIT">
+  <img src="https://img.shields.io/badge/PRs-welcome-brightgreen" alt="PRs welcome">
+</p>
 
-## 개요
+## 이게 뭔가요
 
-Claude Code 플러그인으로, 아이디어를 리서치 → 기획 → 디자인 → generator ⇄ evaluator 빌드
-루프에 태워 플레이 가능한 Expo 앱·게임으로 만듭니다. evaluator는 회의적 QA로 동작합니다 —
-시뮬레이터에서 빌드를 실제로 실행하고, 핵심 플로우를 조작하고, 스크린샷을 살펴본 뒤에야
-PASS를 내립니다. 코드 리뷰만으로는 PASS를 받을 수 없습니다. 크로스플랫폼(iOS + Android)
-앱·게임 프로토타입을 스캐폴딩 작업 없이 만들고 싶은 1인 개발자·소규모 팀을 위한 도구입니다.
+Expo Launchpad는 아이디어를 *플레이 가능한* iOS + Android 앱 **또는** 게임으로 만들어내는
+Claude Code 플러그인입니다. 게이트가 걸린 단계별로 기획하고 빌드한 뒤, 회의적인 evaluator가
+시뮬레이터에서 앱을 실행하고 스크린샷을 살펴본 후에야 "완료"라고 말합니다.
 
-## Requirements
+<details><summary>목차</summary>
 
-- Claude Code
-- macOS + Xcode iOS 시뮬레이터 — evaluator가 `npx expo run:ios`로 빌드를 판정
-- Node
-- Maestro(선택) — E2E 플로우 검증에 사용
+- [주요 기능](#주요-기능)
+- [데모](#데모)
+- [빠른 시작](#빠른-시작)
+- [동작 방식](#동작-방식)
+- [플래그](#플래그)
+- [생성되는 스택](#생성되는-스택)
+- [요구 사항](#요구-사항)
+- [왜 Expo Launchpad인가요?](#왜-expo-launchpad인가요)
+- [자주 묻는 질문](#자주-묻는-질문)
+- [로드맵](#로드맵)
+- [기여하기](#기여하기)
+- [크레딧 및 라이선스](#크레딧-및-라이선스)
+</details>
 
-## 설치
+## 주요 기능
 
-이 저장소는 자체 마켓플레이스(`.claude-plugin/marketplace.json`)를 포함합니다:
+- 💡 아이디어 → 플레이 가능한 결과물 파이프라인 — 코드 한 줄이 생성되기 전에 research, plan, design, contract 과정을 거칩니다.
+- 📱🎮 하나의 하네스로 앱 **그리고** 게임을 모두 (`--kind`).
+- 🕵️ 회의적인 QA — evaluator가 실제 시뮬레이터에서 앱을 실행하고 스크린샷을 살펴봅니다; 스텁(stub)이 발견되면 자동으로 실패 처리됩니다.
+- ✅ 8개의 hard gate에 더해 R1–R11 플랫폼 견고성 게이트(오디오, 라이프사이클, 접근성 등)까지.
+- 🔋 내구성 있는 저장, 다국어 지원(i18n), 접근성이 첫 생성 커밋부터 기본 탑재됩니다.
+- 🎨 두 가지 렌더링 경로 — 앱은 Expo Router, 게임은 Skia.
 
-```
+## 데모
+
+> 🚧 녹화된 데모(아이디어 → 시뮬레이터에서 실행되는 앱)는 준비 중입니다. 지금은 [동작 방식](#동작-방식)을 참고하세요.
+
+## 빠른 시작
+
+```text
+# in Claude Code
 /plugin marketplace add https://github.com/SummerRiversound/expo-launchpad
 /plugin install expo-launchpad
+
+/expo-launchpad --kind app  "a habit tracker with streaks"
+/expo-launchpad --kind game "a one-tap endless runner"
 ```
 
-## Quickstart
+## 동작 방식
 
-```
-/expo-launchpad --kind app "todo app"
-/expo-launchpad --kind game "turn-based puzzle"
-```
+<p align="center"><img src="assets/pipeline.svg" alt="Pipeline" width="100%"></p>
+
+| 단계 | 하는 일 |
+|---|---|
+| research | 시장/장르를 조사하거나, 아이디어가 주어지면 클론-폴백을 확인합니다. |
+| plan | PRD를 작성하고 아이덴티티(`app_name`, `app_slug`, `bundle_id`)를 고정합니다. |
+| design | 디자인 토큰과 비주얼 스펙을 만듭니다. |
+| contract | hard gate와 functional criteria를 협의합니다; `AGREED` 상태가 되기 전까지 generator는 시작하지 않습니다. |
+| generator | 게이트가 걸린 서브 단계로 앱을 빌드합니다. |
+| evaluator | 시뮬레이터에서 앱을 실행하고, 핵심 플로우를 조작하고, 스크린샷을 살펴본 뒤 판정합니다. |
+| human-review | 실행이 완료되기 전, 사람이 PASS를 검토할 때까지 대기합니다. |
+
+generator는 게이트가 걸린 3개의 서브 단계(`6a` → `6b` → `6c`)로 빌드하며, 각 단계는
+`tsc --noEmit` + `expo lint` + `jest`로 게이트됩니다. FAIL이 나오면 evaluator는 실행을 다음
+라운드로 돌려보냅니다.
+
+## 플래그
 
 | 플래그 | 기본값 | 의미 |
 |---|---|---|
-| `[idea]` | — | 한 줄 아이디어; 비워도 유효함 — research가 컨셉을 생성·추천 |
-| `--kind app\|game` | `app` | 무엇을 만들지 |
-| `--engine skia` | `skia` | 렌더 엔진, `kind: game`에서만 의미 있음 |
-| `--strict` | 꺼짐 | evaluator가 품질 스코어링 + 엣지케이스 스윕을 추가 수행 |
-| `--rounds N` | `3` | 강제 판정 전까지의 generator ⇄ evaluator 최대 라운드 수 |
-| `--skip-research` | 꺼짐 | 아이디어가 필수(리서치할 대상이 없으면 안 됨) |
-| `--auto-idea` | 꺼짐 | 사용자에게 묻는 대신 research가 추천한 컨셉을 자동 선택 |
-| `--auto-deploy` | 꺼짐 | evaluator PASS 이후 처리 방식이 달라짐(Pipeline 참고) |
-| `--resume` | — | 중단된 실행을 이어서 진행 |
+| `--kind app\|game` | `app` | 무엇을 만들지. |
+| `--engine skia` | `skia` | 렌더 엔진(게임 전용). |
+| `--strict` | off | evaluator에 품질 스코어링과 엣지 케이스 스윕을 추가합니다. |
+| `--rounds N` | `3` | 강제 판정 전까지의 generator ⇄ evaluator 최대 라운드 수. |
+| `--skip-research` | off | research를 건너뜁니다; 빌드할 아이디어가 필수입니다. |
+| `--auto-idea` | off | 사용자에게 묻는 대신 research가 추천한 컨셉을 자동으로 선택합니다. |
+| `--auto-deploy` | off | evaluator의 PASS 처리 방식이 달라집니다. |
+| `--resume` | — | 중단된 실행을 이어서 진행합니다. |
 
-읽기 전용 보조 리포터: `/expo-launchpad-status` — 단계, 라운드, 다음 역할, 중단 사유를 표시.
-
-## 파이프라인
-
-```
-research → plan → design → contract → generator ⇄ evaluator → paused (human review) → resume → completed
-```
-
-- **research** — 시장/장르 조사, 또는 아이디어가 주어진 경우 클론-폴백 체크.
-- **plan** — PRD + 아이덴티티(`app_name`, `app_slug`, `bundle_id`).
-- **design** — 토큰 + 비주얼 스펙.
-- **contract** — Mandatory Hard Gates + Functional Criteria를 협의; `## Status: AGREED`가 없으면
-  generator는 시작하지 않음.
-- **generator ⇄ evaluator** — generator는 게이트가 걸린 서브 페이즈(체크포인트 `6a`/`6b`/`6c`)로
-  빌드; evaluator는 회의적 QA로서 **시뮬레이터에서 앱을 실제로 실행하고, 핵심 플로우를 조작하며,
-  스크린샷을 살펴본 뒤에야 판정**합니다. 코드 리뷰만으로는 PASS를 받을 수 없고, 스텁이 발견되면
-  자동 FAIL입니다. FAIL이면 다음 라운드가 generator로 돌아가고, PASS면 사람 리뷰를 위해
-  대기(paused)합니다(또는 `--auto-deploy` 설정 시 처리 방식이 다름 — `docs/harness-protocol.md`
-  §7 참고).
-- **resume** — 중단 후 `/expo-launchpad --resume`; PASS 이후의 human-review 게이트에서는 실행을
-  `completed`로 표시합니다(Phase A에는 아직 넘겨줄 배포 단계가 없음).
-
-전체 상태 머신, 파일 스키마, 단계 전이 표는 `docs/harness-protocol.md`에 있습니다.
+읽기 전용 동반 리포터: `/expo-launchpad-status` — 단계, 라운드, 다음 역할, 중단 사유.
 
 ## 생성되는 스택
 
-- **Expo Router**, TypeScript(strict)
-- **Jest**(`jest-expo` 프리셋) + 컴포넌트 테스트용 `@testing-library/react-native`
-- E2E 플로우용 **Maestro**(`.maestro/core-loop.yaml` 게임 / `.maestro/primary-journey.yaml` 앱)
-- 게임 렌더링용 **`@shopify/react-native-skia`**(`kind: game`, 기본 엔진)
-- `expo-audio`, `expo-haptics`, `expo-secure-store`(+ AsyncStorage 내구성 저장),
-  `expo-localization`(i18next), `expo-screen-orientation`
+| 도구 | 역할 |
+|---|---|
+| Expo Router | 앱 내비게이션 (`kind: app`) |
+| TypeScript (strict) | 언어 |
+| Jest (`jest-expo`) + `@testing-library/react-native` | 유닛·컴포넌트 테스트 |
+| Maestro | E2E 플로우 검증 |
+| `@shopify/react-native-skia` | 게임 렌더링 (`kind: game`) |
+| `expo-audio` / `expo-haptics` / `expo-secure-store` / `expo-localization` / `expo-screen-orientation` | 오디오, 햅틱, 보안 저장소, 다국어 지원, 화면 방향 |
 
-## 품질 게이트
+## 요구 사항
 
-- **8개 Mandatory Hard Gates** — 타입/린트 클린, 테스트 통과, 스텁 없음, 튜닝값은
-  `config/gameConfig.ts`/`config/appConfig.ts`에 중앙화, 콘텐츠는 데이터로, 완전한 로컬라이제이션,
-  핵심 루프/주요 여정이 end-to-end로 동작, 시뮬레이터에서 크래시·콘솔 에러 0건. 원문 목록:
-  `docs/harness-protocol.md` §3.
-- **Platform-Robustness Gates R1–R11** — 출시된 RN 앱들에서 얻은 오디오, 햅틱, 앱 라이프사이클,
-  입력/UI, 접근성, 성능, 빌드/플랫폼, 퍼시스턴스 패턴. 전체 패턴 세트: `docs/app-gotchas.md`.
+- Claude Code
+- macOS + Xcode iOS 시뮬레이터 — evaluator가 `npx expo run:ios`로 빌드를 판정합니다
+- Node
+- Maestro(선택) — E2E 플로우 검증에 사용됩니다
 
-## 로드맵 (Phase B)
+## 왜 Expo Launchpad인가요?
 
-미구현: EAS Build/Submit, 스토어 스크린샷·메타데이터, AdMob 연동.
+| | `create-expo-app` | 직접 작업 | **Expo Launchpad** |
+|---|:---:|:---:|:---:|
+| 프로젝트 스캐폴딩 | ✅ | ➖ | ✅ |
+| 시장/클론 리서치 | ➖ | ➖ | ✅ |
+| 코드 이전 PRD + 디자인 + contract | ➖ | ➖ | ✅ |
+| 앱 실행 & 판정(회의적 QA) | ➖ | 수동 | ✅ |
+| 견고성 게이트(오디오, 라이프사이클, 접근성, 내구성 저장) | ➖ | 수동 | ✅ |
+| 앱 **그리고** 게임 | 앱만 | 둘 다 | ✅ |
 
-## 크레딧
+## 자주 묻는 질문
 
-[`flutter-flame-harness`](https://github.com/tjdrhs90/flutter-flame-harness)(MIT, tjdrhs90)의
-구조적 포팅판입니다.
+**정말로 지금 동작하나요?**
+솔직히 말하면: **alpha** 단계입니다. 전체 파이프라인은 구현되어 있고 자체 검증도 통과하지만,
+아직 실제 앱으로 end-to-end 실행을 거친 적은 없습니다. 직접 사용해보고 이슈를 남겨주세요 —
+그런 피드백이 지금 가장 필요합니다.
 
-## License
+**왜 Expo인가요?**
+하나의 TypeScript 코드베이스로 iOS + Android를 모두 커버하고, evaluator가 다룰 수 있는 빠른
+시뮬레이터 루프를 제공합니다.
 
-MIT — [LICENSE](./LICENSE) 참고; 저작자 표시는 [NOTICE](./NOTICE)에 있습니다.
+**앱인가요, 게임인가요?**
+둘 다입니다 — `--kind app`은 Expo Router를, `--kind game`은 Skia 렌더 루프를 사용합니다.
+
+**Phase B는 뭔가요?**
+배포: EAS Build/Submit, 스토어 스크린샷/메타데이터, 광고 — 계획만 되어 있고 아직 구현되지
+않았습니다.
+
+**Mac이 꼭 필요한가요?**
+evaluator의 시뮬레이터 실행에는 필요합니다(`npx expo run:ios`는 Xcode를 필요로 합니다).
+
+## 로드맵
+
+- [x] Phase A — 아이디어 → 플레이 가능한 결과물 (이번 릴리스)
+- [ ] Phase B — EAS build/submit, 스토어 에셋, 광고
+- [ ] 녹화된 데모 + 예제 앱
+
+## 기여하기
+
+기여를 환영합니다 — [CONTRIBUTING.md](CONTRIBUTING.md)와 [SECURITY.md](SECURITY.md)를 참고하세요.
+PR을 열기 전에 `bash scripts/validate.sh`가 통과해야 합니다.
+
+## 크레딧 및 라이선스
+
+MIT — [LICENSE](LICENSE)를 참고하세요. [`flutter-flame-harness`](https://github.com/tjdrhs90/flutter-flame-harness)(MIT, tjdrhs90 저작)를
+구조적으로 포팅한 것입니다 — 자세한 내용은 [NOTICE](NOTICE)를 참고하세요.
+
+<p align="center">⭐ 이 프로젝트가 유용하다면 <b>Star</b>를 눌러주세요 — 다른 사람들이 찾는 데 도움이 됩니다.</p>
