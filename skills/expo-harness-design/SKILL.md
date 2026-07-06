@@ -1,6 +1,6 @@
 ---
 name: expo-harness-design
-description: Phase A design — define the ui/designTokens.ts spec (colors, spacing, radius, typography), the visual/component concept (game: code-drawn Skia shapes / app: RN primitives), and the asset plan (icon+splash branding, contrast-safe accessibility). Advances pipeline state to contract.
+description: "Phase A design — define the ui/designTokens.ts spec (colors, spacing, radius, typography), the visual/component concept (game: code-drawn Skia shapes / app: RN primitives), and the asset plan (icon+splash branding, contrast-safe accessibility). Advances pipeline state to contract."
 argument-hint: ""
 allowed-tools: [Agent, Read, Write, Edit, Bash]
 ---

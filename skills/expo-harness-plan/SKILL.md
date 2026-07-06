@@ -1,6 +1,6 @@
 ---
 name: expo-harness-plan
-description: Phase A plan — assign app identity (app_name/app_slug/bundle_id/orientation) into config.md, then write the PRD in default_language with a kind-branched structure (game: core loop/mechanics/content metrics/progression/win-lose; app: purpose/journeys/features/data model/navigation), plus a project structure map, and advance the pipeline to design.
+description: "Phase A plan — assign app identity (app_name/app_slug/bundle_id/orientation) into config.md, then write the PRD in default_language with a kind-branched structure (game: core loop/mechanics/content metrics/progression/win-lose; app: purpose/journeys/features/data model/navigation), plus a project structure map, and advance the pipeline to design."
 argument-hint: ""
 allowed-tools: [Agent, Read, Write, Edit, Bash]
 ---

@@ -24,6 +24,24 @@ for name in $EXPECTED_SKILLS; do
   ok "$s frontmatter"
 done
 
+# 2b. Skills: frontmatter parses as real YAML (catches unquoted ": " inside scalar values
+#     that the awk substring check above cannot detect)
+if command -v python3 >/dev/null 2>&1 && python3 -c 'import yaml' 2>/dev/null; then
+  for s in skills/*/SKILL.md; do
+    [ -f "$s" ] || continue
+    python3 - "$s" <<'PY'
+import sys,yaml
+f=sys.argv[1]; parts=open(f).read().split('---',2)
+if len(parts)<3: print("FMERR",f,"no frontmatter"); sys.exit(3)
+try: yaml.safe_load(parts[1])
+except Exception as e: print("FMERR",f,str(e).splitlines()[0]); sys.exit(3)
+PY
+    if [ $? -ne 0 ]; then err "invalid YAML frontmatter: $s"; else ok "$s frontmatter parses"; fi
+  done
+else
+  echo "skip: python3/PyYAML unavailable — YAML frontmatter parse check skipped"
+fi
+
 # 3. Grep-cleanliness: no leftover Flutter/Flame/Dart tokens in skills + the two harness docs
 #    (scope docs to the harness docs only — docs/superpowers/{specs,plans} legitimately cite the reference)
 BAD='flutter|flame|\bdart\b|pubspec|sharedpreferences|widgetsbinding|\.arb\b|game_config\.dart|cupertino'

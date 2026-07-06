@@ -68,6 +68,7 @@ skip this section of the report.
   Round         : <current_round>
   Next role     : <next_role>
   Checkpoint    : <checkpoint, or "—" if blank>
+  Resume attempts: <resume_attempts>
   Last updated  : <updated_at>
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
@@ -76,7 +77,6 @@ If `status` is `paused`, append:
 
 ```
   ⚠  Paused — reason: <pause_reason>
-  Resume attempts: <resume_attempts>
   Run /expo-harness --resume (or /expo-harness-resume) to continue.
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```

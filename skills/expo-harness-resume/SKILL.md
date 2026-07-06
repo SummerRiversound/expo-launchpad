@@ -1,6 +1,6 @@
 ---
 name: expo-harness-resume
-description: Resume a paused expo-harness run — finalize the post-evaluator-PASS human-review gate as completed, or restore status: running and redispatch the orchestrator.
+description: "Resume a paused expo-harness run — finalize the post-evaluator-PASS human-review gate as completed, or restore status: running and redispatch the orchestrator."
 argument-hint: ""
 allowed-tools: [Read, Write, Edit, Bash, Skill]
 ---
@@ -51,15 +51,18 @@ Otherwise (`status: paused`), continue below.
 Per `docs/harness-protocol.md` §7, `evaluator | PASS | paused (manual_action) unless auto_deploy`
 is the **only** transition in Phase A that pauses the pipeline for a human to approve finished
 work — `expo-harness-evaluator` writes this exact combination on a PASS:
-`current_phase: evaluator`, `next_role: evaluator`, `pause_reason: manual_action`. Every other
-`pause_reason: manual_action` write in this pipeline (research's unresolved clone-avoidance check,
-plan's unresolved clone signal, design's missing PRD, contract's missing PRD/design doc,
-generator's missing prior-round feedback) leaves `current_phase` at that skill's own phase, never
-`evaluator`, so the two cases never collide.
+`current_phase: evaluator`, `next_role: evaluator`, `pause_reason: manual_action`. The other
+`pause_reason: manual_action` writes in this pipeline from research's unresolved clone-avoidance
+check, plan's unresolved clone signal, design's missing PRD, and contract's missing PRD/design doc
+leave `current_phase` at that skill's own phase, never `evaluator`, so those cases never collide.
+Generator's missing-prior-round-feedback abort is different: `current_phase` can be **stale at
+`evaluator`** there (carried over from the prior FAIL write), so `current_phase` alone cannot be
+trusted to tell that abort apart from the terminal case. The field that actually disambiguates is
+`next_role`, which stays `generator` on this abort versus `evaluator` on the terminal PASS.
 
-- **Terminal case** — `current_phase: evaluator` AND `pause_reason: manual_action` AND
-  `next_role: evaluator`: the post-evaluator-PASS human-review gate. Handle per **Terminal case**
-  below.
+- **Terminal case** — `pause_reason: manual_action` AND `next_role: evaluator` (with
+  `current_phase: evaluator`): the post-evaluator-PASS human-review gate. Handle per **Terminal
+  case** below.
 - **Otherwise** — any other paused state (a manual_action pause recorded by research/plan/design/
   contract/generator, or the `rate_limit`/`error` values reserved by the §2 schema): the pipeline
   just needs to pick back up where it left off. Handle per **Otherwise** below.
