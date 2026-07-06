@@ -28,9 +28,18 @@ performance, persistence, accessibility, build/platform) is defined once in
 ### Workspace root
 
 `docs/harness/` is bootstrapped by the orchestrator in the directory the pipeline was invoked
-from — call this the **workspace root**. Every path below is relative to the workspace root until
-6a.2 moves `docs/harness/` inside the new project, after which every path is relative to the
-project root (`<app_slug>/`).
+from — call this the **workspace root**. It stays there for the **entire pipeline** and is never
+moved or copied into the generated project — every harness file (`config.md`, `state.md`,
+`contract.md`, `plans/*`, `handoff/*`, `feedback/*`, `pipeline-log.md`, `build-log.md`,
+`screenshots/`) is always read/written at the workspace-root path `docs/harness/...`, never at
+`<app_slug>/docs/harness/...`. This is what keeps `--resume` and the status/resume skills working:
+they read `docs/harness/state.md` at a fixed path relative to the invocation directory, forever.
+
+The generated Expo project lives in its own subdirectory, `<workspace root>/<app_slug>/`, and is
+its own git repository (6a.9). Sub-phase 6a.1 `cd`s into `<app_slug>/` so the build/test commands
+(`create-expo-app`, `tsc --noEmit`, `expo lint`, `jest`, `expo run:ios`, and the app's own git
+commits) run from inside it — that `cd` is scoped to those commands only and never carries over to
+where harness files live.
 
 ### Determine current round
 
@@ -97,19 +106,7 @@ template name/flag has changed across Expo SDK releases).
 resume or a re-run of round 1. The guard above makes 6a.1 safe to re-enter — it reuses an existing
 scaffold instead of hard-failing.
 
-### 6a.2 Move docs/harness into the project
-
-Per `docs/harness-protocol.md`, move the harness directory into the project so all pipeline
-artifacts share one repository:
-
-```bash
-mv ../docs/harness docs/harness
-```
-
-Run this from inside `<app_slug>/` (already `cd`'d into in 6a.1). All subsequent reads/writes of
-`config.md`/`state.md`/etc. use this new path (`<app_slug>/docs/harness/...`).
-
-### 6a.3 Project identity — package.json and app.json
+### 6a.2 Project identity — package.json and app.json
 
 Set in `package.json`:
 
@@ -122,7 +119,7 @@ Set in `app.json` (`expo` block):
 - `slug`: `<app_slug>`
 - `orientation`: `<orientation>` (from `config.md` — `portrait` or `landscape`)
 
-### 6a.4 Bundle id — identical across platforms
+### 6a.3 Bundle id — identical across platforms
 
 **Set it explicitly and IDENTICALLY on both platforms** (per `docs/app-gotchas.md` R6). In
 `app.json`:
@@ -141,7 +138,7 @@ Verify `ios.bundleIdentifier` == `android.package` == `config.md`'s `bundle_id`,
 bundle id at all — this step adds both explicitly; never leave one platform unset while the other
 is configured.
 
-### 6a.5 Remove default template boilerplate
+### 6a.4 Remove default template boilerplate
 
 Delete the generated demo screens/tests so the project starts from a clean slate:
 
@@ -151,10 +148,10 @@ rm -rf app/(tabs) components/HelloWave.tsx components/ParallaxScrollView.tsx \
 ```
 
 (Adjust the exact list to whatever the installed template version actually scaffolded — the goal
-is an empty `app/` route tree and no leftover demo components before 6a.7/6a.8 write the real
+is an empty `app/` route tree and no leftover demo components before 6a.6/6a.7 write the real
 ones.) Keep `app/_layout.tsx` — it is rewritten, not deleted.
 
-### 6a.6 Copy shared config templates
+### 6a.5 Copy shared config templates
 
 Copy from this plugin's `templates/` directory (the plugin's own `templates/`, not a directory
 inside the generated project):
@@ -184,7 +181,7 @@ Install dependencies used from 6a onward (both kinds): `expo-secure-store`,
 compatible version, unlike a bare `npm install`). Install kind-specific packages in the steps
 below where they're first used.
 
-### 6a.7 `kind: game` — Skia canvas, loop, state machine, input
+### 6a.6 `kind: game` — Skia canvas, loop, state machine, input
 
 1. **Dependencies**: `npx expo install @shopify/react-native-skia react-native-gesture-handler`.
 2. **Game-state type**: create `game/scene/gameState.ts`:
@@ -208,7 +205,7 @@ below where they're first used.
    inside a `GestureDetector` wrapping the `<Canvas>` — never the raw `PanResponder`/`onTouch*`
    APIs (`docs/app-gotchas.md`, Input & UI).
 
-### 6a.8 `kind: app` — Expo Router route tree, navigation, state layer
+### 6a.7 `kind: app` — Expo Router route tree, navigation, state layer
 
 1. Create one route file under `app/` per row of the PRD's §6 Navigation Map (file-based routing —
    route path maps directly to the file path/name, e.g. `app/settings.tsx` → `/settings`).
@@ -220,7 +217,7 @@ below where they're first used.
 4. Each route implements the Loading/Empty/Error states its PRD §5 States row specifies (even as a
    minimal placeholder at this stage — full implementations land in 6b/6c).
 
-### 6a.9 Minimal passing test
+### 6a.8 Minimal passing test
 
 Branching on `kind`:
 
@@ -229,7 +226,7 @@ Branching on `kind`:
 - **`kind: app`**: create `config/appConfig.test.ts` asserting `AppConfig`'s core constants are
   positive / within range (page size > 0, timeout > 0, etc.).
 
-### 6a.10 Initialize version control
+### 6a.9 Initialize version control
 
 The generated project is its own git repository — initialize it and commit as the build
 progresses, so the work has atomic history from the start (and the user can diff/revert per
@@ -249,7 +246,7 @@ discrete fix on round N > 1.
 
 ### 6a HARD GATE
 
-After completing steps 6a.1–6a.10, run and confirm all three exit 0 before proceeding to
+After completing steps 6a.1–6a.9, run and confirm all three exit 0 before proceeding to
 Sub-phase 6b:
 
 ```bash
@@ -444,7 +441,7 @@ The game-over overlay shows the final score, best score (with a new-record indic
 control, and a main-menu control. All sizes/colours use `ui/designTokens.ts`.
 
 **`kind: app`** — for each screen the PRD's §2 Primary Journeys / §6 Navigation Map defines, fill
-in the full implementation (the route files created in 6a.8 held placeholders): Loading/Empty/Error
+in the full implementation (the route files created in 6a.7 held placeholders): Loading/Empty/Error
 states per PRD §5, styled exclusively from `ui/designTokens.ts`, using shared building blocks
 under `components/` (buttons, cards, lists, form fields) so no screen duplicates the same markup.
 
@@ -479,10 +476,14 @@ never flash faster than 3×/second.
    If more must be stored, split across additional `saveRepository` keys or keep bulk data in
    `AsyncStorage` only, with just a pointer/critical subset going through `saveRepository`.
 3. Route every persisted read/write through `saveRepository.ts` — no direct `AsyncStorage`/
-   `expo-secure-store` calls anywhere else. `kind: game`'s `scoreSystem.ts` (6b.2) and the
-   audio/haptics `enabled` toggles (6b.4/6b.5) now wire through it; `kind: app`'s `state/` layer
-   loads it once at startup into an in-memory shape and writes through it on every mutation.
-4. Write critical values synchronously at run-end (final score, currency, progress) rather than
+   `expo-secure-store` calls anywhere else. `kind: game`'s `scoreSystem.ts` (6b.2) wires through it;
+   `kind: app`'s `state/` layer loads it once at startup into an in-memory shape and writes through
+   it on every mutation.
+4. Migrate the audio/haptics `enabled` toggles from the direct `AsyncStorage` stopgap (6b.4/6b.5) to
+   route through `saveRepository.ts` — replace the direct `AsyncStorage` calls in
+   `game/systems/haptics.ts` and `game/systems/audioSystem.ts` with calls into `saveRepository.ts`,
+   and verify no direct `AsyncStorage` calls remain outside `saveRepository.ts`.
+5. Write critical values synchronously at run-end (final score, currency, progress) rather than
    relying only on a later async flush.
 
 ### 6c.5 App branding — icon, splash, display name
@@ -508,14 +509,14 @@ shipped app must not have the default Expo icon, default splash, or a slug-ish d
    `expo.android.adaptiveIcon` (`foregroundImage` + `backgroundColor: <Colors.primary>`), and the
    `expo-splash-screen` plugin entry (`image`, `imageWidth: 200`, `resizeMode: "contain"`,
    `backgroundColor: <Colors.background>`).
-3. **Display name** — `app.json`'s `expo.name` was already set to `<app_name>` in 6a.3; confirm it
+3. **Display name** — `app.json`'s `expo.name` was already set to `<app_name>` in 6a.2; confirm it
    still reads as the human display name, not the slug (this is what both platforms show as the
    home-screen label in a managed Expo build).
 
 ### 6c.6 Native platform config — orientation lock
 
 **R6 — Native config safe (cite `docs/app-gotchas.md`; do not restate).** `app.json`'s
-`expo.orientation` was set in 6a.3; reinforce it at runtime so the app can't rotate into the unused
+`expo.orientation` was set in 6a.2; reinforce it at runtime so the app can't rotate into the unused
 orientation even under a dev client or a config that doesn't fully honour `app.json`:
 
 1. `npx expo install expo-screen-orientation`.
@@ -525,15 +526,14 @@ orientation even under a dev client or a config that doesn't fully honour `app.j
 
 ### 6c.7 Anti-stub verification
 
-Before the final HARD GATE, run the grep scoped to this `kind`'s directories (same command the
-contract phase used):
+Before the final HARD GATE, run one directory-agnostic scan over every TypeScript source in the
+project (covers `app/`, `game/`, `components/`, `config/`, `data/`, `services/`, `state/`, `hooks/`,
+`ui/`, `i18n/` and any other source dir — no need to enumerate them, and nothing is missed if a
+dir was added in 6b/6c that an enumerated list would omit). Run from inside `<app_slug>/` (the
+working directory since 6a.1):
 
 ```bash
-# kind: game
-grep -rniE "TODO|stub|placeholder" app/ game/ config/ data/ ui/ 2>/dev/null
-
-# kind: app
-grep -rniE "TODO|stub|placeholder" app/ components/ config/ data/ services/ state/ 2>/dev/null
+grep -rniE "TODO|stub|placeholder|미구현" . --include='*.ts' --include='*.tsx' | grep -vE 'node_modules|/\.expo/|/dist/'
 ```
 
 If this command returns any output, fix or remove every match. The contract requires zero stubs in
@@ -591,7 +591,7 @@ All three must report **zero errors/failures**. Also confirm branding (6c.5): a 
 splash were generated (not the default Expo art), the icon is **opaque (no alpha)**, and the
 display name equals `app_name` (not the slug). And native config (6c.6): orientation locked to
 `config.orientation` both statically (`app.json`) and at runtime (`expo-screen-orientation`). And
-assets/CI (6a.10/6c.5): every asset referenced in code exists on disk (no dangling paths), and
+assets/CI (6a.9/6c.5): every asset referenced in code exists on disk (no dangling paths), and
 `.github/workflows/ci.yml` is present.
 
 **This is the final gate. Do not write the handoff until all three commands pass. If any fails,
@@ -607,8 +607,8 @@ After the 6c HARD GATE passes, write the generator handoff and update pipeline s
 
 ### Write handoff/round-N-gen.md
 
-Create `docs/harness/handoff/round-<N>-gen.md` inside the project, following the layout defined in
-`docs/harness-protocol.md` §4:
+Create `docs/harness/handoff/round-<N>-gen.md` at the workspace root, following the layout defined
+in `docs/harness-protocol.md` §4:
 
 ```markdown
 # Round <N> — Generator Handoff
@@ -697,6 +697,6 @@ Append one row to `docs/harness/pipeline-log.md` per `docs/harness-protocol.md` 
   sub-phase.
 - If the feedback file for round N-1 is missing on a round > 1 run, abort with a clear message and
   set `state.md` to `status: paused`, `pause_reason: manual_action`.
-- If `create-expo-app` fails, abort immediately and do not proceed to 6a.3.
+- If `create-expo-app` fails, abort immediately and do not proceed to 6a.2.
 - If a dependency install fails, check for SDK version conflicts (`npx expo install --check`) and
   resolve before continuing.
