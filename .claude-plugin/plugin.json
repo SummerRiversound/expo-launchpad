@@ -3,5 +3,5 @@
   "version": "0.1.0",
   "description": "Idea-to-playable harness for Expo (React Native + TypeScript) apps and games: research, plan, design, contract, and a generator-evaluator build loop with skeptical QA. --kind app|game.",
   "author": { "name": "haeun", "email": "42575126+SummerRiversound@users.noreply.github.com" },
-  "repository": "https://github.com/haeun/expo-harness"
+  "repository": "https://github.com/SummerRiversound/expo-harness"
 }
