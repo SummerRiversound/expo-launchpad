@@ -14,6 +14,7 @@
   <img src="https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white" alt="TypeScript">
   <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License: MIT">
   <img src="https://img.shields.io/badge/PRs-welcome-brightgreen" alt="PRs welcome">
+  <a href="https://ko-fi.com/riversound"><img src="https://img.shields.io/badge/Ko--fi-Buy%20me%20a%20coffee-FF5E5B?logo=ko-fi&logoColor=white" alt="Support on Ko-fi"></a>
 </p>
 
 ## これは何か
@@ -35,6 +36,7 @@ Expo Launchpad は、アイデアを*プレイ可能な* iOS + Android アプリ
 - [なぜ Expo Launchpad なのか](#なぜ-expo-launchpad-なのか)
 - [よくある質問](#よくある質問)
 - [ロードマップ](#ロードマップ)
+- [サポート](#サポート)
 - [コントリビュート](#コントリビュート)
 - [クレジットとライセンス](#クレジットとライセンス)
 </details>
@@ -151,6 +153,12 @@ evaluator のシミュレーター実行には必要です（`npx expo run:ios` 
 - [x] Phase A —— アイデア → プレイ可能な成果物（今回のリリース）
 - [ ] Phase B —— EAS build/submit、ストア用アセット、広告
 - [ ] 録画デモ + サンプルアプリ
+
+## サポート
+
+Expo Launchpad が時間の節約に役立ったら、[コーヒーを一杯](https://ko-fi.com/riversound) ☕ おごっていただけると、プロジェクトの継続に大きな励みになります。ありがとうございます！
+
+<a href="https://ko-fi.com/riversound"><img src="https://ko-fi.com/img/githubbutton_sm.svg" alt="Support me on Ko-fi" height="36"></a>
 
 ## コントリビュート
 

@@ -14,6 +14,7 @@
   <img src="https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white" alt="TypeScript">
   <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License: MIT">
   <img src="https://img.shields.io/badge/PRs-welcome-brightgreen" alt="PRs welcome">
+  <a href="https://ko-fi.com/riversound"><img src="https://img.shields.io/badge/Ko--fi-Buy%20me%20a%20coffee-FF5E5B?logo=ko-fi&logoColor=white" alt="Support on Ko-fi"></a>
 </p>
 
 ## What is this
@@ -34,6 +35,7 @@ a simulator and studies screenshots before it ever says "done."
 - [Why Expo Launchpad?](#why-expo-launchpad)
 - [FAQ](#faq)
 - [Roadmap](#roadmap)
+- [Support](#support)
 - [Contributing](#contributing)
 - [Credits & License](#credits--license)
 </details>
@@ -146,6 +148,12 @@ Yes for the evaluator's simulator run (`npx expo run:ios` needs Xcode).
 - [x] Phase A — idea → playable (this release)
 - [ ] Phase B — EAS build/submit, store assets, ads
 - [ ] Recorded demo + example app
+
+## Support
+
+If Expo Launchpad saves you time, you can [buy me a coffee](https://ko-fi.com/riversound) ☕ — it helps keep the project moving. Thank you!
+
+<a href="https://ko-fi.com/riversound"><img src="https://ko-fi.com/img/githubbutton_sm.svg" alt="Support me on Ko-fi" height="36"></a>
 
 ## Contributing
 

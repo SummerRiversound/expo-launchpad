@@ -14,6 +14,7 @@
   <img src="https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white" alt="TypeScript">
   <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License: MIT">
   <img src="https://img.shields.io/badge/PRs-welcome-brightgreen" alt="PRs welcome">
+  <a href="https://ko-fi.com/riversound"><img src="https://img.shields.io/badge/Ko--fi-Buy%20me%20a%20coffee-FF5E5B?logo=ko-fi&logoColor=white" alt="Support on Ko-fi"></a>
 </p>
 
 ## 이게 뭔가요
@@ -34,6 +35,7 @@ Claude Code 플러그인입니다. 게이트가 걸린 단계별로 기획하고
 - [왜 Expo Launchpad인가요?](#왜-expo-launchpad인가요)
 - [자주 묻는 질문](#자주-묻는-질문)
 - [로드맵](#로드맵)
+- [후원](#후원)
 - [기여하기](#기여하기)
 - [크레딧 및 라이선스](#크레딧-및-라이선스)
 </details>
@@ -150,6 +152,12 @@ evaluator의 시뮬레이터 실행에는 필요합니다(`npx expo run:ios`는 
 - [x] Phase A — 아이디어 → 플레이 가능한 결과물 (이번 릴리스)
 - [ ] Phase B — EAS build/submit, 스토어 에셋, 광고
 - [ ] 녹화된 데모 + 예제 앱
+
+## 후원
+
+Expo Launchpad가 시간을 아껴줬다면 [커피 한 잔](https://ko-fi.com/riversound) ☕ 사주세요 — 프로젝트를 계속 이어가는 데 큰 힘이 됩니다. 감사합니다!
+
+<a href="https://ko-fi.com/riversound"><img src="https://ko-fi.com/img/githubbutton_sm.svg" alt="Support me on Ko-fi" height="36"></a>
 
 ## 기여하기
 

@@ -14,6 +14,7 @@
   <img src="https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white" alt="TypeScript">
   <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License: MIT">
   <img src="https://img.shields.io/badge/PRs-welcome-brightgreen" alt="PRs welcome">
+  <a href="https://ko-fi.com/riversound"><img src="https://img.shields.io/badge/Ko--fi-Buy%20me%20a%20coffee-FF5E5B?logo=ko-fi&logoColor=white" alt="Support on Ko-fi"></a>
 </p>
 
 ## 这是什么
@@ -34,6 +35,7 @@ Expo Launchpad 是一个 Claude Code 插件，能把一个创意变成*可玩的
 - [为什么选择 Expo Launchpad？](#为什么选择-expo-launchpad)
 - [常见问题](#常见问题)
 - [路线图](#路线图)
+- [支持](#支持)
 - [贡献指南](#贡献指南)
 - [致谢与许可证](#致谢与许可证)
 </details>
@@ -146,6 +148,12 @@ evaluator 的模拟器运行环节需要（`npx expo run:ios` 依赖 Xcode）。
 - [x] Phase A —— 创意 → 可玩成品（本次发布）
 - [ ] Phase B —— EAS build/submit、商店素材、广告
 - [ ] 录屏演示 + 示例应用
+
+## 支持
+
+如果 Expo Launchpad 帮你节省了时间，欢迎[请我喝杯咖啡](https://ko-fi.com/riversound) ☕ —— 这能让项目持续前进。谢谢！
+
+<a href="https://ko-fi.com/riversound"><img src="https://ko-fi.com/img/githubbutton_sm.svg" alt="Support me on Ko-fi" height="36"></a>
 
 ## 贡献指南
 
