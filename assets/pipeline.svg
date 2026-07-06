@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 240" width="1200" height="240" role="img" aria-label="Pipeline: research, plan, design, contract, generator, evaluator, playable">
+  <defs>
+    <linearGradient id="node" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#7c5cff"/>
+      <stop offset="1" stop-color="#5b34d6"/>
+    </linearGradient>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#5b34d6"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1200" height="240" rx="20" fill="#f5f6fb"/>
+  <g font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="19" font-weight="600" fill="#ffffff" text-anchor="middle">
+    <g>
+      <rect x="40" y="96" width="150" height="48" rx="12" fill="url(#node)"/><text x="115" y="126">Research</text>
+      <rect x="230" y="96" width="120" height="48" rx="12" fill="url(#node)"/><text x="290" y="126">Plan</text>
+      <rect x="390" y="96" width="130" height="48" rx="12" fill="url(#node)"/><text x="455" y="126">Design</text>
+      <rect x="560" y="96" width="150" height="48" rx="12" fill="url(#node)"/><text x="635" y="126">Contract</text>
+      <rect x="750" y="96" width="160" height="48" rx="12" fill="url(#node)"/><text x="830" y="126">Generator</text>
+      <rect x="950" y="96" width="160" height="48" rx="12" fill="url(#node)"/><text x="1030" y="126">Evaluator</text>
+    </g>
+  </g>
+  <g stroke="#5b34d6" stroke-width="2.5" fill="none">
+    <line x1="190" y1="120" x2="228" y2="120" marker-end="url(#arrow)"/>
+    <line x1="350" y1="120" x2="388" y2="120" marker-end="url(#arrow)"/>
+    <line x1="520" y1="120" x2="558" y2="120" marker-end="url(#arrow)"/>
+    <line x1="710" y1="120" x2="748" y2="120" marker-end="url(#arrow)"/>
+    <line x1="910" y1="120" x2="948" y2="120" marker-end="url(#arrow)"/>
+  </g>
+  <g stroke="#e0447a" stroke-width="2.5" fill="none">
+    <path d="M950 138 C 900 185, 860 185, 832 152" marker-end="url(#arrow)"/>
+  </g>
+  <text x="890" y="205" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#e0447a" text-anchor="middle">FAIL ↺ next round</text>
+  <g font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="17" font-weight="700" text-anchor="middle">
+    <text x="1030" y="60" fill="#2a9d5b">PASS → playable app / game ✓</text>
+  </g>
+  <text x="600" y="35" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="15" fill="#6b7280" text-anchor="middle">The evaluator runs the app on a simulator and studies screenshots before it passes.</text>
+</svg>
