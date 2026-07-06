@@ -130,12 +130,12 @@ those catalogs instead (generator 6b.3 / 6b.1 puts levels/enemies/waves and type
 ls <app_slug>/data/*.ts >/dev/null 2>&1 || echo "FAIL: no content catalogs under data/ (Hard Gate 5)"
 # kind: game — flag inline arrays of >=3 object-literal entries (entity/level/wave data) in game/ logic
 grep -rlE "=\s*\[" <app_slug>/game/ 2>/dev/null | grep -v node_modules | while read -r f; do
-  n=$(awk '/=\s*\[/,/\];/' "$f" | grep -c "{")
+  n=$(awk '/=[[:space:]]*\[/,/\];/' "$f" | grep -c "{")
   [ "${n:-0}" -ge 3 ] && echo "FAIL: $f — inline array with $n object-literal entries; level/enemy/wave data belongs in data/, not game/ logic"
 done
 # kind: app — flag inline arrays of >=3 object-literal entries in screen/feature code outside data/
 grep -rlE "=\s*\[" <app_slug>/app/ <app_slug>/services/ <app_slug>/state/ 2>/dev/null | grep -v node_modules | while read -r f; do
-  n=$(awk '/=\s*\[/,/\];/' "$f" | grep -c "{")
+  n=$(awk '/=[[:space:]]*\[/,/\];/' "$f" | grep -c "{")
   [ "${n:-0}" -ge 3 ] && echo "FAIL: $f — inline array with $n object-literal entries; screen/list data belongs in data/, not feature code"
 done
 ```
