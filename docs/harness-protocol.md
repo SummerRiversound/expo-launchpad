@@ -1,6 +1,6 @@
 # Harness Protocol
 
-Single source of truth for the `expo-harness` state machine: the `config.md`/`state.md`/`contract.md`
+Single source of truth for the `expo-launchpad` state machine: the `config.md`/`state.md`/`contract.md`
 schemas, the generator/evaluator handoff layouts, the log table schemas, and the phase transition
 table. Every skill cites this document instead of restating any schema. This is the **Phase A**
 slice only — idea → playable app/game, ending at a human-review pause. The Phase B seam (deploy) is

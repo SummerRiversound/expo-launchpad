@@ -1,11 +1,11 @@
 ---
-name: expo-harness
-description: Orchestrator — bootstrap an Expo (RN+TS) app/game pipeline (idea→playable) and dispatch each phase skill. Use when starting or continuing an expo-harness run.
+name: expo-launchpad
+description: Orchestrator — bootstrap an Expo (RN+TS) app/game pipeline (idea→playable) and dispatch each phase skill. Use when starting or continuing an expo-launchpad run.
 argument-hint: "[idea] [--kind app|game] [--engine skia] [--strict] [--rounds N] [--skip-research] [--auto-idea] [--auto-deploy] [--resume]"
 allowed-tools: [Agent, Read, Write, Edit, Bash, Glob, Grep, AskUserQuestion, Skill]
 ---
 
-# expo-harness Orchestrator
+# expo-launchpad Orchestrator
 
 This skill bootstraps and drives the Expo (React Native + TypeScript) app/game pipeline —
 Phase A: idea → playable build, ending at a human-review pause. All file schemas (`config.md`,
@@ -33,7 +33,7 @@ Parse the invocation arguments before doing anything else.
 | `--resume` | (delegates to resume handler; see Resume section) | — |
 
 **Guard:** if `--skip-research` is set AND no idea is given, abort immediately with:
-`expo-harness: --skip-research needs an idea (nothing to build without research or an idea).`
+`expo-launchpad: --skip-research needs an idea (nothing to build without research or an idea).`
 
 Key-to-file mapping follows the `config.md` schema in `docs/harness-protocol.md` §1.
 
@@ -48,11 +48,11 @@ Key-to-file mapping follows the `config.md` schema in `docs/harness-protocol.md`
 - `--auto-deploy` → `auto_deploy: true`. Affects how an evaluator PASS is resolved per §7 — the
   dispatch loop itself does not special-case this; it only ever reacts to `status`/`next_role`.
 - `--resume` → skip bootstrap and the dispatch loop entirely; delegate straight to
-  `expo-harness-resume` (see Resume)
+  `expo-launchpad-resume` (see Resume)
 
 **Language detection:** determine `default_language` from the language the user is conversing in
 (a Korean request → `ko`, an English request → `en`). If there is no conversational signal yet (a
-bare `/expo-harness` with no idea), fall back to the OS locale — run
+bare `/expo-launchpad` with no idea), fall back to the OS locale — run
 `defaults read -g AppleLanguages 2>/dev/null || echo $LANG` and map the first locale (`ko*` → `ko`,
 otherwise `en`). Only default to `en` if even that is unavailable.
 
@@ -123,7 +123,7 @@ Read `docs/harness/state.md` and extract `status` and `next_role`.
 Otherwise, invoke the phase skill for `next_role`:
 
 ```
-Skill("expo-harness-<next_role>")
+Skill("expo-launchpad-<next_role>")
 ```
 
 Valid `next_role` values and the skill each dispatches to, per the transition table in
@@ -131,19 +131,19 @@ Valid `next_role` values and the skill each dispatches to, per the transition ta
 
 | next_role | Skill invoked |
 |---|---|
-| `research` | `expo-harness-research` |
-| `plan` | `expo-harness-plan` |
-| `design` | `expo-harness-design` |
-| `contract` | `expo-harness-contract` |
-| `generator` | `expo-harness-generator` |
-| `evaluator` | `expo-harness-evaluator` |
+| `research` | `expo-launchpad-research` |
+| `plan` | `expo-launchpad-plan` |
+| `design` | `expo-launchpad-design` |
+| `contract` | `expo-launchpad-contract` |
+| `generator` | `expo-launchpad-generator` |
+| `evaluator` | `expo-launchpad-evaluator` |
 
 Each phase skill is responsible for updating `state.md` (including advancing `next_role`) before
 returning, following the transition rules in `docs/harness-protocol.md` §7.
 
 After each skill returns, re-read `state.md` and verify that either `updated_at` changed or
 `next_role` advanced compared to the values before dispatch. If neither changed, abort immediately
-with: `expo-harness: phase skill \`<role>\` returned without updating state.md — halting to avoid a
+with: `expo-launchpad: phase skill \`<role>\` returned without updating state.md — halting to avoid a
 redispatch loop.`
 
 Then repeat the dispatch check. Continue until:
@@ -161,10 +161,10 @@ a new pipeline."
 Otherwise, skip all bootstrap and dispatch logic and delegate immediately to the resume skill:
 
 ```
-Skill("expo-harness-resume")
+Skill("expo-launchpad-resume")
 ```
 
-`expo-harness-resume` is responsible for reading `state.md`, incrementing `resume_attempts`,
+`expo-launchpad-resume` is responsible for reading `state.md`, incrementing `resume_attempts`,
 restoring `status: running`, and re-entering the dispatch loop.
 
 Do not attempt to read or modify `state.md` before delegating to the resume skill.

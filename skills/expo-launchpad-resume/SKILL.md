@@ -1,13 +1,13 @@
 ---
-name: expo-harness-resume
-description: "Resume a paused expo-harness run — finalize the post-evaluator-PASS human-review gate as completed, or restore status: running and redispatch the orchestrator."
+name: expo-launchpad-resume
+description: "Resume a paused expo-launchpad run — finalize the post-evaluator-PASS human-review gate as completed, or restore status: running and redispatch the orchestrator."
 argument-hint: ""
 allowed-tools: [Read, Write, Edit, Bash, Skill]
 ---
 
-# expo-harness-resume
+# expo-launchpad-resume
 
-Resume handler for the expo-harness pipeline. Reads `docs/harness/state.md`, decides whether the
+Resume handler for the expo-launchpad pipeline. Reads `docs/harness/state.md`, decides whether the
 paused run is the Phase A terminal human-review gate or an ordinary pause, and either finalizes the
 run as `completed` or restores `status: running` and re-enters the orchestrator's dispatch loop.
 
@@ -34,12 +34,12 @@ Extract per the schema in `docs/harness-protocol.md` §2: `status`, `current_pha
 `current_round`, `next_role`, `pause_reason`, `resume_attempts`, `checkpoint`, `created_at`,
 `updated_at`.
 
-- If `status: running` — print `expo-harness-resume: pipeline is already running (next_role:
+- If `status: running` — print `expo-launchpad-resume: pipeline is already running (next_role:
   <next_role>). No resume needed.` and exit.
-- If `status: completed` — print `expo-harness-resume: pipeline is already completed. Nothing to
+- If `status: completed` — print `expo-launchpad-resume: pipeline is already completed. Nothing to
   resume.` and exit.
 - If `status` is anything other than `paused`/`running`/`completed`, abort with:
-  `expo-harness-resume: unexpected status "<value>" in state.md — inspect docs/harness/state.md
+  `expo-launchpad-resume: unexpected status "<value>" in state.md — inspect docs/harness/state.md
   manually.`
 
 Otherwise (`status: paused`), continue below.
@@ -50,7 +50,7 @@ Otherwise (`status: paused`), continue below.
 
 Per `docs/harness-protocol.md` §7, `evaluator | PASS | paused (manual_action) unless auto_deploy`
 is the **only** transition in Phase A that pauses the pipeline for a human to approve finished
-work — `expo-harness-evaluator` writes this exact combination on a PASS:
+work — `expo-launchpad-evaluator` writes this exact combination on a PASS:
 `current_phase: evaluator`, `next_role: evaluator`, `pause_reason: manual_action`. The other
 `pause_reason: manual_action` writes in this pipeline from research's unresolved clone-avoidance
 check, plan's unresolved clone signal, design's missing PRD, and contract's missing PRD/design doc
@@ -76,13 +76,13 @@ yet, per `docs/harness-protocol.md` §7's Phase B seam note. So a resume of the 
 human-review gate does not dispatch a next phase — it finalizes the run.
 
 This skill's `allowed-tools` does not include `AskUserQuestion`, so it does not re-prompt for
-approval. `expo-harness-evaluator` already told the user, at pause time, to inspect
+approval. `expo-launchpad-evaluator` already told the user, at pause time, to inspect
 `docs/harness/screenshots/` and `docs/harness/feedback/round-<N>-qa.md` and only run
-`--resume`/`expo-harness-resume` "when satisfied" — the user's explicit invocation of this skill
+`--resume`/`expo-launchpad-resume` "when satisfied" — the user's explicit invocation of this skill
 **is** that approval. Print:
 
 ```
-expo-harness-resume: treating this --resume invocation as your approval of the build reviewed at
+expo-launchpad-resume: treating this --resume invocation as your approval of the build reviewed at
 the evaluator PASS gate (per the prompt printed when it paused). Finalizing the run as completed.
 ```
 
@@ -113,7 +113,7 @@ Append one row per the schema in `docs/harness-protocol.md` §6:
 ### 3. Print a completion summary
 
 ```
-expo-harness pipeline complete.
+expo-launchpad pipeline complete.
 The build passed QA and has been approved. See docs/harness/feedback/ for the full QA record.
 ```
 
@@ -153,7 +153,7 @@ Append one row per the schema in `docs/harness-protocol.md` §6:
 Delegate back to the orchestrator so it re-reads `next_role` and continues the dispatch loop:
 
 ```
-Skill("expo-harness")
+Skill("expo-launchpad")
 ```
 
 Never dispatch before `state.md` has been successfully updated to `status: running` with
@@ -167,5 +167,5 @@ Never dispatch before `state.md` has been successfully updated to `status: runni
   not write partial state changes.
 - If the `Edit` call to `state.md` fails, abort and do not append to `pipeline-log.md` or dispatch
   anything.
-- `expo-harness`'s own dispatch loop validates `next_role` against the known role set and reports
+- `expo-launchpad`'s own dispatch loop validates `next_role` against the known role set and reports
   an "unknown next_role" error if it is invalid — this skill does not duplicate that check.

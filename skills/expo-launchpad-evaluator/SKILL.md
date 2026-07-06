@@ -1,13 +1,13 @@
 ---
-name: expo-harness-evaluator
+name: expo-launchpad-evaluator
 description: Phase A, step 6 — skeptical QA. Run the app, watch it, then judge against the contract. Default = functional check; --strict adds quality scoring and an edge-case sweep.
 argument-hint: ""
 allowed-tools: [Agent, Read, Write, Edit, Bash, Glob, Grep]
 ---
 
-# expo-harness-evaluator
+# expo-launchpad-evaluator
 
-Phase A, step 6 of the expo-harness pipeline. Skeptical QA gate that decides PASS or FAIL against
+Phase A, step 6 of the expo-launchpad pipeline. Skeptical QA gate that decides PASS or FAIL against
 the negotiated contract. Default mode runs the functional check (6.1) only; `--strict` adds
 quality scoring (6.2) and an agent-team edge-case sweep (6.3).
 
@@ -62,10 +62,10 @@ Before any check, load:
 3. `"$ROOT/docs/harness/contract.md"` — parse `## Mandatory Hard Gates`,
    `## Platform-Robustness Gates`, and `## Functional Criteria`. Confirm `## Status: AGREED` is
    present; if missing, abort with:
-   `expo-harness-evaluator: contract not AGREED — run expo-harness-contract first`.
+   `expo-launchpad-evaluator: contract not AGREED — run expo-launchpad-contract first`.
 4. `"$ROOT/docs/harness/handoff/round-<N>-gen.md"` (where N = `current_round`) per protocol §4. If
    the file is missing, abort with:
-   `expo-harness-evaluator: handoff for round <N> not found — generator must run first`.
+   `expo-launchpad-evaluator: handoff for round <N> not found — generator must run first`.
 
 ---
 
@@ -412,7 +412,7 @@ updated_at: "<ISO-8601 UTC now>"
 ```
 
 Leave `current_round`, `created_at`, and `resume_attempts` unchanged. The evaluator's job ends at
-recording the PASS; a future `expo-harness-resume` is responsible for recognizing this state
+recording the PASS; a future `expo-launchpad-resume` is responsible for recognizing this state
 (current_phase `evaluator`, a PASS on record) and finalizing `status: completed` on `--resume`.
 
 Print a review checklist for the user, in `default_language` (translate the following template;
@@ -420,16 +420,16 @@ an example Korean rendering follows):
 
 > Build + QA passed. **Before anything else, check it yourself:** `cd <app_slug> && npx expo
 > start`, then review the QA screenshots in `docs/harness/screenshots/` and
-> `docs/harness/feedback/round-<N>-qa.md`. Run `/expo-harness --resume` when satisfied.
+> `docs/harness/feedback/round-<N>-qa.md`. Run `/expo-launchpad --resume` when satisfied.
 
 Korean rendering (when `default_language: ko`):
 
 > 빌드 + QA 통과. **직접 확인하세요:** `cd <app_slug> && npx expo start` 로 실행하고,
 > `docs/harness/screenshots/` 의 QA 스크린샷과 `docs/harness/feedback/round-<N>-qa.md` 를 확인하세요.
-> 만족하면 `/expo-harness --resume` 를 실행하세요.
+> 만족하면 `/expo-launchpad --resume` 를 실행하세요.
 
 **`auto_deploy: true` — terminate, no pause.** `status: completed` is a real terminal state: the
-orchestrator's dispatch loop (`skills/expo-harness/SKILL.md`) exits as soon as it sees
+orchestrator's dispatch loop (`skills/expo-launchpad/SKILL.md`) exits as soon as it sees
 `status: completed` and never re-dispatches `next_role`. Do not leave `status: running` here —
 `next_role: evaluator` unchanged plus a running status would make the dispatch loop invoke this
 skill again on every pass (its anti-loop guard only aborts when *neither* `updated_at` nor

@@ -1,4 +1,4 @@
-# expo-harness
+# expo-launchpad
 
 Expo(React Native + TypeScript) 앱/게임을 위한 **아이디어 → 실행 가능한 빌드** 파이프라인을
 구동하는 설치형 Claude Code 플러그인입니다.
@@ -14,15 +14,15 @@ Expo/RN/TS 스택에 맞게 재구성했습니다.
 이 저장소는 자체 로컬 마켓플레이스(`.claude-plugin/marketplace.json`)를 포함합니다:
 
 ```
-/plugin marketplace add <path-to-expo-harness>
-/plugin install expo-harness
+/plugin marketplace add <path-to-expo-launchpad>
+/plugin install expo-launchpad
 ```
 
 ## 사용법
 
 ```
-/expo-harness --kind app "todo app"
-/expo-harness --kind game "turn-based puzzle"
+/expo-launchpad --kind app "todo app"
+/expo-launchpad --kind game "turn-based puzzle"
 ```
 
 | 플래그 | 기본값 | 의미 |
@@ -37,7 +37,7 @@ Expo/RN/TS 스택에 맞게 재구성했습니다.
 | `--auto-deploy` | 꺼짐 | evaluator PASS 이후 처리 방식이 달라짐(Pipeline 참고) |
 | `--resume` | — | 중단된 실행을 이어서 진행 |
 
-읽기 전용 보조 리포터: `/expo-harness-status` — 단계, 라운드, 다음 역할, 중단 사유를 표시.
+읽기 전용 보조 리포터: `/expo-launchpad-status` — 단계, 라운드, 다음 역할, 중단 사유를 표시.
 
 ## 파이프라인
 
@@ -56,7 +56,7 @@ research → plan → design → contract → generator ⇄ evaluator → paused
   자동 FAIL입니다. FAIL이면 다음 라운드가 generator로 돌아가고, PASS면 사람 리뷰를 위해
   대기(paused)합니다(또는 `--auto-deploy` 설정 시 처리 방식이 다름 — `docs/harness-protocol.md`
   §7 참고).
-- **resume** — 중단 후 `/expo-harness --resume`; PASS 이후의 human-review 게이트에서는 실행을
+- **resume** — 중단 후 `/expo-launchpad --resume`; PASS 이후의 human-review 게이트에서는 실행을
   `completed`로 표시합니다(Phase A에는 아직 넘겨줄 배포 단계가 없음).
 
 전체 상태 머신, 파일 스키마, 단계 전이 표는 `docs/harness-protocol.md`에 있습니다.

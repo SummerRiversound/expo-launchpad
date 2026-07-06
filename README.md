@@ -1,4 +1,4 @@
-# expo-harness
+# expo-launchpad
 
 An installable Claude Code plugin that drives an **idea → playable** pipeline for Expo (React
 Native + TypeScript) apps and games. A faithful structural port of
@@ -13,15 +13,15 @@ listings, ads) is a future Phase B — not implemented here.
 This repo ships its own local marketplace (`.claude-plugin/marketplace.json`):
 
 ```
-/plugin marketplace add <path-to-expo-harness>
-/plugin install expo-harness
+/plugin marketplace add <path-to-expo-launchpad>
+/plugin install expo-launchpad
 ```
 
 ## Usage
 
 ```
-/expo-harness --kind app "todo app"
-/expo-harness --kind game "turn-based puzzle"
+/expo-launchpad --kind app "todo app"
+/expo-launchpad --kind game "turn-based puzzle"
 ```
 
 | Flag | Default | Meaning |
@@ -36,7 +36,7 @@ This repo ships its own local marketplace (`.claude-plugin/marketplace.json`):
 | `--auto-deploy` | off | changes how an evaluator PASS resolves (see Pipeline) |
 | `--resume` | — | continue a paused run |
 
-Companion read-only reporter: `/expo-harness-status` — phase, round, next role, pause reason.
+Companion read-only reporter: `/expo-launchpad-status` — phase, round, next role, pause reason.
 
 ## Pipeline
 
@@ -54,7 +54,7 @@ research → plan → design → contract → generator ⇄ evaluator → paused
   studies screenshots before judging**. Code review alone never earns a PASS; a detected stub is
   an automatic FAIL. FAIL sends the next round back to the generator; PASS pauses for human
   review (or, with `--auto-deploy`, resolves differently — see `docs/harness-protocol.md` §7).
-- **resume** — `/expo-harness --resume` after a pause; on the post-PASS human-review gate it marks
+- **resume** — `/expo-launchpad --resume` after a pause; on the post-PASS human-review gate it marks
   the run `completed` (Phase A has no deploy phase to hand off to yet).
 
 Full state machine, file schemas, and the phase-transition table: `docs/harness-protocol.md`.

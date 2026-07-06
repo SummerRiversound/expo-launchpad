@@ -7,7 +7,7 @@ this file (DRY); skills do not restate it.
 
 This doc holds the robustness *patterns*; the full numbered Platform-Robustness Gate list (R1–R11,
 including R5/R7/R8/R11, which aren't inline-labeled below) is defined in
-`skills/expo-harness-contract/SKILL.md`.
+`skills/expo-launchpad-contract/SKILL.md`.
 
 Universal rule: **every native call (audio, haptics, storage, orientation) is wrapped in
 try/catch, logs via `console.warn`, and never rethrows.** Missing assets/features degrade
