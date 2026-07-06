@@ -1,0 +1,23 @@
+// i18n/i18n.ts — i18next init using the device locale, with a resources map per configured locale.
+import i18n from 'i18next';
+import { initReactI18next } from 'react-i18next';
+import { getLocales } from 'expo-localization';
+
+const FALLBACK_LOCALE = 'en';
+
+const resources = {
+  en: { translation: { welcome: 'Welcome' } },
+  // add additional locales here, e.g. ko: { translation: { welcome: '환영합니다' } },
+} as const;
+
+const deviceLocale = getLocales()[0]?.languageCode ?? FALLBACK_LOCALE;
+const initialLocale = deviceLocale in resources ? deviceLocale : FALLBACK_LOCALE;
+
+i18n.use(initReactI18next).init({
+  resources,
+  lng: initialLocale,
+  fallbackLng: FALLBACK_LOCALE,
+  interpolation: { escapeValue: false },
+});
+
+export default i18n;

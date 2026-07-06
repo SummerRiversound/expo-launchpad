@@ -1,0 +1,30 @@
+# <APP_NAME>
+
+<ONE_LINE_PITCH>
+
+## Tech stack
+
+- [Expo](https://expo.dev)
+- Expo Router
+- TypeScript (strict)
+- Jest (`jest-expo`) + `@testing-library/react-native`
+- Maestro (E2E)
+- <ADDITIONAL_DEPENDENCIES>
+
+## Run
+
+```bash
+npx expo start
+```
+
+## Test
+
+```bash
+npx jest
+npx tsc --noEmit
+npx expo lint
+```
+
+## License
+
+MIT — see [LICENSE](./LICENSE).

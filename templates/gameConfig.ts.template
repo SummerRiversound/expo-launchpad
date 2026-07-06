@@ -1,0 +1,9 @@
+// config/gameConfig.ts — all tuning constants for <APP_NAME>.
+// Edit here to tweak gameplay; never hard-code gameplay numbers elsewhere.
+export const GameConfig = {
+  world: { width: 360, height: 640 },
+  player: { speed: 200, jumpForce: 500 },
+  score: { perEnemy: 10, perDistance: 1 },
+  difficulty: { initialSpawnInterval: 2.0, minSpawnInterval: 0.4, rampRate: 0.02 },
+  audio: { bgmVolume: 0.6, sfxVolume: 0.9 },
+} as const;
