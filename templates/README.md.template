@@ -4,12 +4,7 @@
 
 ## Tech stack
 
-- [Expo](https://expo.dev)
-- Expo Router
-- TypeScript (strict)
-- Jest (`jest-expo`) + `@testing-library/react-native`
-- Maestro (E2E)
-- <ADDITIONAL_DEPENDENCIES>
+<TECH_STACK>
 
 ## Run
 
