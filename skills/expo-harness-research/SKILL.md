@@ -176,7 +176,8 @@ proceed to Clone avoidance. Do not query the user.
 
 1. Extract the core mechanic (game) or core value proposition (app) from the chosen concept.
 2. Use WebSearch to find the 3 most similar existing apps/games (get the current year via
-   `date +%Y`, as in Discovery, and substitute it for `<current-year>`):
+   `date +%Y`, as in Discovery, and substitute it for `<current-year>`; `<previous-year>` is
+   `<current-year> - 1`, derived from that same value):
    - `kind: game` — `"<core mechanic>" mobile game App Store <current-year> OR <previous-year>`
    - `kind: app` — `"<core value proposition>" app App Store OR Google Play <current-year> OR
      <previous-year>`
@@ -200,13 +201,16 @@ proceed to Clone avoidance. Do not query the user.
 
    **If `auto_idea: true`** — do **not** call AskUserQuestion. Auto-revise by applying one
    differentiator from the "safe" list above, then re-run the clone check. Retry up to 2 attempts.
-   If still a clone:
-   - **If a proposal list exists** (i.e. `skip_research` was not `true` — Propose & query ran),
-     fall back to the next-highest-scored proposal from that list and run the clone check on it.
-   - **If no proposal list exists** (`skip_research: true` — Propose & query never ran, so there
-     is nothing to fall back to), ask the user for a new direction via AskUserQuestion despite
-     `auto_idea: true` — a persistent clone on a single skip-research idea cannot be resolved
-     hands-off:
+   If still a clone, branch on whether a scored proposal list actually exists — that is the case
+   **only** when `app_idea` was blank (the only path where Propose & query generated and scored 2-3
+   concepts):
+   - **If `app_idea` was blank** (a scored proposal list exists) — fall back to the next-highest-scored
+     proposal from that list and run the clone check on it. If the list is exhausted (every proposal
+     has been tried) and a clone still remains, escalate exactly as in the next bullet.
+   - **Otherwise** (`skip_research: true`, or `skip_research: false` with a non-blank `app_idea` —
+     either way "Propose & query" produced only a single concept, so there is no list to fall back
+     to) — ask the user for a new direction via AskUserQuestion despite `auto_idea: true`, since a
+     persistent clone on a single concept cannot be resolved hands-off:
      ```
      The provided idea remains too similar to <similar app> on the App Store / Google Play after
      automatic revision attempts, which may trigger App Store guideline 4.3 or Google Play's
@@ -215,8 +219,8 @@ proceed to Clone avoidance. Do not query the user.
      ```
      If the run is truly non-interactive (no user available to ask), instead set `state.md` to
      `status: paused`, `pause_reason: manual_action`, append a note to `pipeline-log.md` explaining
-     that the skip-research idea could not be made clone-safe automatically, and stop — do not
-     write the research spec.
+     that the concept could not be made clone-safe automatically, and stop — do not write the
+     research spec.
    Record the outcome (which differentiator was applied, that a fallback proposal was used, or
    that the run was escalated/paused).
 6. Record the clone-check result in the research spec (see Output) as `SAFE` or `CLONE (resolved)`.
