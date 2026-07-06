@@ -30,7 +30,7 @@ Extract:
 | `app_slug` | Kebab-case identifier (blank — this skill sets it) |
 | `bundle_id` | App bundle ID (blank — this skill sets it) |
 | `kind` | `game` or `app` — drives which PRD structure and structure map is written |
-| `engine` | `skia` or `rnge` — meaningful only when `kind: game`; cited in the PRD's mechanics/structure sections |
+| `engine` | `skia` — the only supported Phase A value, meaningful only when `kind: game`; cited in the PRD's mechanics/structure sections |
 | `default_language` | The user's conversation language; the PRD and all copy are written in it |
 | `orientation` | Currently `portrait` (bootstrap default) — this skill may revise it |
 

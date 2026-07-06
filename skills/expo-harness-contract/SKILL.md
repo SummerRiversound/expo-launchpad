@@ -81,9 +81,8 @@ numbered gate wording below). These are mandatory:
   render loop and audio on background/inactive and reverses on active; teardown cancels all
   timers/listeners including the `AppState` subscription itself; input is gated behind a `canInput`
   flag during the background→active transition.
-- **R4 Performance**: no per-frame allocations in the Skia/`useFrameCallback` (or RN Game Engine)
-  loop — `Skia.Paint` and other reusable instances are hoisted outside the loop, not recreated per
-  frame.
+- **R4 Performance**: no per-frame allocations in the Skia/`useFrameCallback` loop — `Skia.Paint`
+  and other reusable instances are hoisted outside the loop, not recreated per frame.
 - **R5 App branding**: a custom app icon + splash screen are generated (never the default Expo
   template art), the icon is opaque (no alpha channel), and the app display name is set to
   `app_name`.

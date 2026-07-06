@@ -5,6 +5,10 @@ Hard-won robustness fixes for the Expo/React Native stack, learned from shipped 
 must verify** them — so a generated app does not silently regress on problems already solved. Cite
 this file (DRY); skills do not restate it.
 
+This doc holds the robustness *patterns*; the full numbered Platform-Robustness Gate list (R1–R11,
+including R5/R7/R8/R11, which aren't inline-labeled below) is defined in
+`skills/expo-harness-contract/SKILL.md`.
+
 Universal rule: **every native call (audio, haptics, storage, orientation) is wrapped in
 try/catch, logs via `console.warn`, and never rethrows.** Missing assets/features degrade
 gracefully (silent audio, no-op haptic, fallback UI) — the app stays usable.

@@ -27,7 +27,7 @@ Extract:
 | Key | Use |
 |---|---|
 | `kind` | `app` or `game` — drives which visual/component template and project-structure slot this skill fills |
-| `engine` | `skia` or `rnge` — meaningful only when `kind: game`. Either way the design spec below is renderer-agnostic (shapes/primitives + tokens); `engine` only changes which library the generator uses to draw them |
+| `engine` | `skia` — the only supported Phase A value, meaningful only when `kind: game`. The design spec below is renderer-agnostic (shapes/primitives + tokens) |
 | `app_name` | Used in the splash screen and app-icon badge intent |
 | `app_slug` | Used for asset directory naming conventions |
 | `default_language` | The user's conversation language; write the design doc's prose and copy samples in it |
@@ -216,9 +216,8 @@ entity needed for the MVP core loop:
 | Background | rect (solid or gradient) | screen width × height | `Colors.background`→`Colors.surface` | static, drawn once |
 | ... | ... | ... | ... | ... |
 
-Dimensions are logical dp; the renderer (Skia `Canvas`/`useFrameCallback`, or the RN Game Engine
-loop when `engine: rnge`) scales to device pixel ratio automatically — the shape spec above does
-not change with `engine`.
+Dimensions are logical dp; the renderer (Skia `Canvas`/`useFrameCallback`) scales to device pixel
+ratio automatically.
 
 ### `kind: game` — overlay/HUD layout
 

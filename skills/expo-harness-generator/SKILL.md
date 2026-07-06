@@ -29,54 +29,67 @@ performance, persistence, accessibility, build/platform) is defined once in
 
 `docs/harness/` is bootstrapped by the orchestrator in the directory the pipeline was invoked
 from — call this the **workspace root**. It stays there for the **entire pipeline** and is never
-moved or copied into the generated project — every harness file (`config.md`, `state.md`,
-`contract.md`, `plans/*`, `handoff/*`, `feedback/*`, `pipeline-log.md`, `build-log.md`,
-`screenshots/`) is always read/written at the workspace-root path `docs/harness/...`, never at
-`<app_slug>/docs/harness/...`. This is what keeps `--resume` and the status/resume skills working:
-they read `docs/harness/state.md` at a fixed path relative to the invocation directory, forever.
+moved or copied into the generated project. Before any other step (including the round-1/round-N
+reads below), capture the workspace root once:
 
-The generated Expo project lives in its own subdirectory, `<workspace root>/<app_slug>/`, and is
-its own git repository (6a.9). Sub-phase 6a.1 `cd`s into `<app_slug>/` so the build/test commands
+```bash
+ROOT="$(pwd)"
+```
+
+From this point on, **every harness file** (`config.md`, `state.md`, `contract.md`, `plans/*`,
+`handoff/*`, `feedback/*`, `pipeline-log.md`, `build-log.md`, `screenshots/*`) — whether read or
+written via a Bash redirect, or read/written via the `Write`/`Edit` tools — uses the root-absolute
+path `"$ROOT/docs/harness/..."`, never a path relative to whatever directory the shell happens to
+be in at the time. `ROOT` is fixed once, the same way `<app_slug>` and `<N>` are: treat it as a
+value substituted verbatim into every command below, not a live shell variable that needs to
+survive between separate tool invocations. This is what keeps `--resume` and the status/resume
+skills working: they read `docs/harness/state.md` at a fixed path relative to the invocation
+directory, forever.
+
+The generated Expo project lives in its own subdirectory, `"$ROOT/<app_slug>/"`, and is its own git
+repository (6a.9). Sub-phase 6a.1 `cd`s into `<app_slug>/` so the build/test commands
 (`create-expo-app`, `tsc --noEmit`, `expo lint`, `jest`, `expo run:ios`, and the app's own git
 commits) run from inside it — that `cd` is scoped to those commands only and never carries over to
-where harness files live.
+where harness files are written. Never write into `<app_slug>/docs/harness/`.
 
 ### Determine current round
 
-Read `docs/harness/state.md`. Extract `current_round` (integer, ≥ 1).
+Read `"$ROOT/docs/harness/state.md"`. Extract `current_round` (integer, ≥ 1).
 
 ### Round 1 — build from scratch
 
 When `current_round` is 1:
 
-1. Read `docs/harness/config.md` (extract `app_name`, `app_slug`, `bundle_id`, `kind`, `engine`,
-   `default_language`, `orientation`).
-2. Read the latest PRD (`docs/harness/plans/*-prd.md`, sort descending, take first).
-3. Read the latest design doc (`docs/harness/plans/*-design.md`, sort descending, take first).
-4. Read `docs/harness/contract.md`. Confirm `## Status: AGREED` is present; abort with
+1. Read `"$ROOT/docs/harness/config.md"` (extract `app_name`, `app_slug`, `bundle_id`, `kind`,
+   `engine`, `default_language`, `orientation`).
+2. Read the latest PRD (`"$ROOT/docs/harness/plans/*-prd.md"`, sort descending, take first).
+3. Read the latest design doc (`"$ROOT/docs/harness/plans/*-design.md"`, sort descending, take
+   first).
+4. Read `"$ROOT/docs/harness/contract.md"`. Confirm `## Status: AGREED` is present; abort with
    `expo-harness-generator: contract not AGREED — run expo-harness-contract first` if missing.
-5. Read `checkpoint` from `state.md` (`docs/harness-protocol.md` §2). **Re-entry:** if a prior run
-   crashed/paused mid-phase, skip every sub-phase `≤ checkpoint` (its HARD GATE already passed and
-   its output exists) and resume at the next one — e.g. `checkpoint: 6a` → start at 6b. If
-   `checkpoint` is `""`, start at 6a. If `checkpoint` is already `6c`, the build is complete for
-   this round; skip straight to **Self-evaluation and Handoff**. This makes the generator safe to
-   re-run without redoing (or colliding with) completed work.
+5. Read `checkpoint` from `"$ROOT/docs/harness/state.md"` (`docs/harness-protocol.md` §2).
+   **Re-entry:** if a prior run crashed/paused mid-phase, skip every sub-phase `≤ checkpoint` (its
+   HARD GATE already passed and its output exists) and resume at the next one — e.g.
+   `checkpoint: 6a` → start at 6b. If `checkpoint` is `""`, start at 6a. If `checkpoint` is already
+   `6c`, the build is complete for this round; skip straight to **Self-evaluation and Handoff**.
+   This makes the generator safe to re-run without redoing (or colliding with) completed work.
 
 ### Round N > 1 — fix only listed failures (feedback intake)
 
 When `current_round` is greater than 1:
 
-1. Read `docs/harness/feedback/round-<N-1>-qa.md` (per `docs/harness-protocol.md` §5 layout).
+1. Read `"$ROOT/docs/harness/feedback/round-<N-1>-qa.md"` (per `docs/harness-protocol.md` §5
+   layout).
 2. Parse the `## Failed Criteria` section to extract each failing criterion and its prescribed fix.
 3. Map each failure to the sub-phase that owns it (6a scaffold/core loop, 6b systems/data/features,
    6c UI/content/tests/polish) and edit the smallest set of files needed. Do NOT redesign or
    refactor areas that were not listed as failures.
-4. If `docs/harness/feedback/round-<N-1>-qa.md` does not exist, abort with:
+4. If `"$ROOT/docs/harness/feedback/round-<N-1>-qa.md"` does not exist, abort with:
    `expo-harness-generator: feedback file for round <N-1> not found — cannot determine fixes`.
 5. Apply each fix, then run the full HARD GATE (`npx tsc --noEmit && npx expo lint && npx jest`)
    before writing the handoff. `checkpoint` was reset to `""` by the evaluator on FAIL — after a
-   successful round N>1 gate, write `checkpoint: 6c` again (the project is fully built, just
-   patched) before writing the handoff.
+   successful round N>1 gate, write `checkpoint: 6c` again to `"$ROOT/docs/harness/state.md"` (the
+   project is fully built, just patched) before writing the handoff.
 
 ---
 
@@ -258,7 +271,7 @@ npx jest
 `tsc --noEmit` must report **zero errors**. `expo lint` must report **zero errors**. `jest` must
 report **zero failures**. When green, commit:
 `git add -A && git commit -q -m "feat: scaffold and core loop pass tsc+lint+jest (6a)"`, then write
-`checkpoint: 6a` to `state.md` (atomically) so a later re-entry skips 6a.
+`checkpoint: 6a` to `"$ROOT/docs/harness/state.md"` (atomically) so a later re-entry skips 6a.
 
 **If any command fails, fix all reported issues before proceeding. Do not start 6b until this
 gate is green.**
@@ -402,7 +415,7 @@ npx jest
 
 All three must report **zero errors/failures**. When green, commit:
 `git add -A && git commit -q -m "feat: systems and features pass tsc+lint+jest (6b)"`, then write
-`checkpoint: 6b` to `state.md`.
+`checkpoint: 6b` to `"$ROOT/docs/harness/state.md"`.
 
 **If any command fails, fix all reported issues before proceeding. Do not start 6c until this
 gate is green.**
@@ -597,7 +610,7 @@ assets/CI (6a.9/6c.5): every asset referenced in code exists on disk (no danglin
 **This is the final gate. Do not write the handoff until all three commands pass. If any fails,
 fix all reported issues and re-run all three.** When green, commit:
 `git add -A && git commit -q -m "feat: UI, content, branding and native config (6c)"`, then write
-`checkpoint: 6c` to `state.md` before writing the handoff.
+`checkpoint: 6c` to `"$ROOT/docs/harness/state.md"` before writing the handoff.
 
 ---
 
@@ -607,8 +620,8 @@ After the 6c HARD GATE passes, write the generator handoff and update pipeline s
 
 ### Write handoff/round-N-gen.md
 
-Create `docs/harness/handoff/round-<N>-gen.md` at the workspace root, following the layout defined
-in `docs/harness-protocol.md` §4:
+Create `"$ROOT/docs/harness/handoff/round-<N>-gen.md"`, following the layout defined in
+`docs/harness-protocol.md` §4:
 
 ```markdown
 # Round <N> — Generator Handoff
@@ -653,9 +666,9 @@ Fill every section with actual output and real assessments. Do not leave placeho
 
 ### Update state.md
 
-Update `docs/harness/state.md` per `docs/harness-protocol.md` §2 and the `generator → evaluator`
-transition in §7. Per §7 rule 2, a successful phase completion sets `status: running` in the same
-atomic write:
+Update `"$ROOT/docs/harness/state.md"` per `docs/harness-protocol.md` §2 and the
+`generator → evaluator` transition in §7. Per §7 rule 2, a successful phase completion sets
+`status: running` in the same atomic write:
 
 ```yaml
 status: running
@@ -673,7 +686,7 @@ update.
 
 ### Append to build-log.md
 
-Append one row to `docs/harness/build-log.md` per `docs/harness-protocol.md` §6:
+Append one row to `"$ROOT/docs/harness/build-log.md"` per `docs/harness-protocol.md` §6:
 
 ```
 | <N> | generator | <ISO-8601 UTC now> | handoff | round <N> built; tsc 0; lint 0; jest 0 failures |
@@ -681,7 +694,7 @@ Append one row to `docs/harness/build-log.md` per `docs/harness-protocol.md` §6
 
 ### Append to pipeline-log.md
 
-Append one row to `docs/harness/pipeline-log.md` per `docs/harness-protocol.md` §6:
+Append one row to `"$ROOT/docs/harness/pipeline-log.md"` per `docs/harness-protocol.md` §6:
 
 ```
 | <ISO-8601 UTC now> | generator | handoff | evaluator |
@@ -696,7 +709,7 @@ Append one row to `docs/harness/pipeline-log.md` per `docs/harness-protocol.md` 
   stop at that sub-phase, fix the failures, and re-run the gate. Do not advance to the next
   sub-phase.
 - If the feedback file for round N-1 is missing on a round > 1 run, abort with a clear message and
-  set `state.md` to `status: paused`, `pause_reason: manual_action`.
+  set `"$ROOT/docs/harness/state.md"` to `status: paused`, `pause_reason: manual_action`.
 - If `create-expo-app` fails, abort immediately and do not proceed to 6a.2.
 - If a dependency install fails, check for SDK version conflicts (`npx expo install --check`) and
   resolve before continuing.

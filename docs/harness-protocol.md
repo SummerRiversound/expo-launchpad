@@ -33,7 +33,8 @@ app_name: ""              # human-readable name, set by plan
 app_slug: ""              # kebab-case identifier, set by plan
 bundle_id: ""             # com.<company>.<id>, set by plan
 kind: app                 # app | game
-engine: skia              # skia | rnge — game only, ignored when kind: app
+engine: skia              # skia — the only supported Phase A value; game only, ignored when kind: app
+                          # (rnge reserved for a future release — not implemented in Phase A)
 default_language: en      # BCP-47-ish language code for generated content
 orientation: portrait     # portrait | landscape
 strict_mode: false
@@ -48,7 +49,7 @@ credentials_dir: ""       # placeholder only — Phase A never writes signing/st
 - `bundle_id` is `com.<company>.<id>`, where `<id>` is `app_slug` with hyphens/underscores stripped,
   lowercased to `[a-z0-9]`. It must be byte-identical across `app.json` `ios.bundleIdentifier` and
   `android.package`.
-- `kind: game` is the only case where `engine` is meaningful (`skia` default, `rnge` alternative).
+- `kind: game` is the only case where `engine` is meaningful; Phase A ships `skia` only.
 - No `admob` block exists in Phase A — monetization config is out of scope until Phase B.
 
 ## 2. state.md Schema
