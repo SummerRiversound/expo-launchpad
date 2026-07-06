@@ -1,0 +1,13 @@
+// data/saveRepository.ts — durable save: SecureStore (Keychain/Keystore) + AsyncStorage mirror.
+import * as SecureStore from 'expo-secure-store';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+const KEY = '__SAVE_KEY__'; // e.g. <app_slug>_save_v1
+export async function readMap(): Promise<Record<string, unknown>> {
+  try { const s = await SecureStore.getItemAsync(KEY); if (s) return JSON.parse(s); } catch (e) { console.warn('secure read', e); }
+  try { const a = await AsyncStorage.getItem(KEY); if (a) return JSON.parse(a); } catch (e) { console.warn('async read', e); }
+  return {};
+}
+export async function write(json: string): Promise<void> {
+  try { await SecureStore.setItemAsync(KEY, json); } catch (e) { console.warn('secure write', e); }
+  try { await AsyncStorage.setItem(KEY, json); } catch (e) { console.warn('async write', e); }
+}

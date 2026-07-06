@@ -1,0 +1,25 @@
+# <APP_NAME>
+
+<ONE_LINE_PITCH>
+
+## Tech stack
+
+<TECH_STACK>
+
+## Run
+
+```bash
+npx expo start
+```
+
+## Test
+
+```bash
+npx jest
+npx tsc --noEmit
+npx expo lint
+```
+
+## License
+
+MIT — see [LICENSE](./LICENSE).

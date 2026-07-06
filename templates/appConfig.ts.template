@@ -1,0 +1,7 @@
+// config/appConfig.ts — all tuning constants for <APP_NAME>.
+// Edit here to tweak app behavior; never hard-code these values elsewhere.
+export const AppConfig = {
+  pagination: { pageSize: 20, prefetchThreshold: 5 },
+  network: { requestTimeoutMs: 10000, retryCount: 2 },
+  features: { offlineMode: false, analytics: true },
+} as const;
