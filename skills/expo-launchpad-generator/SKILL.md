@@ -1,13 +1,13 @@
 ---
-name: expo-harness-generator
+name: expo-launchpad-generator
 description: Phase A, step 5 — build the Expo app/game in 3 gated sub-phases (scaffold+core → systems+features → UI+content+polish), branched by kind (app|game). Each sub-phase ends with a HARD GATE (tsc --noEmit + expo lint + jest) before advancing; round N>1 fixes only the listed evaluator failures.
 argument-hint: ""
 allowed-tools: [Agent, Read, Write, Edit, Bash, Glob, Grep]
 ---
 
-# expo-harness-generator
+# expo-launchpad-generator
 
-Phase A, step 5 of the expo-harness pipeline. Builds the Expo (React Native + TypeScript) app or
+Phase A, step 5 of the expo-launchpad pipeline. Builds the Expo (React Native + TypeScript) app or
 game in three gated sub-phases (6a → 6b → 6c), branching every step by `config.md`'s `kind`
 (`app` | `game`). Each sub-phase ends with a HARD GATE (`npx tsc --noEmit && npx expo lint && npx
 jest`, all green) before the next sub-phase begins. On round N > 1, reads the previous evaluator
@@ -66,7 +66,7 @@ When `current_round` is 1:
 3. Read the latest design doc (`"$ROOT/docs/harness/plans/*-design.md"`, sort descending, take
    first).
 4. Read `"$ROOT/docs/harness/contract.md"`. Confirm `## Status: AGREED` is present; abort with
-   `expo-harness-generator: contract not AGREED — run expo-harness-contract first` if missing.
+   `expo-launchpad-generator: contract not AGREED — run expo-launchpad-contract first` if missing.
 5. Read `checkpoint` from `"$ROOT/docs/harness/state.md"` (`docs/harness-protocol.md` §2).
    **Re-entry:** if a prior run crashed/paused mid-phase, skip every sub-phase `≤ checkpoint` (its
    HARD GATE already passed and its output exists) and resume at the next one — e.g.
@@ -85,7 +85,7 @@ When `current_round` is greater than 1:
    6c UI/content/tests/polish) and edit the smallest set of files needed. Do NOT redesign or
    refactor areas that were not listed as failures.
 4. If `"$ROOT/docs/harness/feedback/round-<N-1>-qa.md"` does not exist, abort with:
-   `expo-harness-generator: feedback file for round <N-1> not found — cannot determine fixes`.
+   `expo-launchpad-generator: feedback file for round <N-1> not found — cannot determine fixes`.
 5. Apply each fix, then run the full HARD GATE (`npx tsc --noEmit && npx expo lint && npx jest`)
    before writing the handoff. `checkpoint` was reset to `""` by the evaluator on FAIL — after a
    successful round N>1 gate, write `checkpoint: 6c` again to `"$ROOT/docs/harness/state.md"` (the
@@ -250,7 +250,7 @@ additionally exclude (per `config.md`'s `credentials_dir` placeholder note in
 
 ```bash
 git init -q
-git add -A && git commit -q -m "chore: scaffold <app_name> (expo-harness 6a)"
+git add -A && git commit -q -m "chore: scaffold <app_name> (expo-launchpad 6a)"
 ```
 
 Use **Conventional Commits** and **never add AI-authorship trailers** (no `Co-Authored-By`, no

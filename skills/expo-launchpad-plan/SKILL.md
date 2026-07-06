@@ -1,13 +1,13 @@
 ---
-name: expo-harness-plan
+name: expo-launchpad-plan
 description: "Phase A plan — assign app identity (app_name/app_slug/bundle_id/orientation) into config.md, then write the PRD in default_language with a kind-branched structure (game: core loop/mechanics/content metrics/progression/win-lose; app: purpose/journeys/features/data model/navigation), plus a project structure map, and advance the pipeline to design."
 argument-hint: ""
 allowed-tools: [Agent, Read, Write, Edit, Bash]
 ---
 
-# expo-harness-plan
+# expo-launchpad-plan
 
-Phase A, step 2 of the expo-harness pipeline. Reads the research spec and `config.md`, decides the
+Phase A, step 2 of the expo-launchpad pipeline. Reads the research spec and `config.md`, decides the
 app identity, writes a comprehensive PRD in the project's `default_language` (branching structure
 on `kind`), maps the project directory structure, and advances the pipeline state to `design`.
 
@@ -35,13 +35,13 @@ Extract:
 | `orientation` | Currently `portrait` (bootstrap default) — this skill may revise it |
 
 If `config.md` does not exist, abort with:
-`expo-harness-plan: docs/harness/config.md not found — run the orchestrator to bootstrap first.`
+`expo-launchpad-plan: docs/harness/config.md not found — run the orchestrator to bootstrap first.`
 
 ### 2. Read the latest research spec
 
 Find the most recent file matching `docs/harness/specs/*-research.md` (sort by filename descending,
 take the first). If no spec file exists, abort with:
-`expo-harness-plan: no research spec found in docs/harness/specs/ — run expo-harness-research first.`
+`expo-launchpad-plan: no research spec found in docs/harness/specs/ — run expo-launchpad-research first.`
 
 Extract from the spec:
 
@@ -126,7 +126,7 @@ Both templates share this header block:
 
 > **Version:** 1.0
 > **Date:** <YYYY-MM-DD>
-> **Author:** expo-harness-plan
+> **Author:** expo-launchpad-plan
 > **Kind:** game | app
 > **Bundle ID:** com.example.<id> (`example` is a Phase A placeholder — see Identity assignment)
 > **Orientation:** portrait | landscape

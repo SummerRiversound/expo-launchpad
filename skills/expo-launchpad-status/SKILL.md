@@ -1,13 +1,13 @@
 ---
-name: expo-harness-status
-description: Show the current expo-harness pipeline state — phase, round, next role, pause reason — read-only.
+name: expo-launchpad-status
+description: Show the current expo-launchpad pipeline state — phase, round, next role, pause reason — read-only.
 argument-hint: ""
 allowed-tools: [Read, Bash]
 ---
 
-# expo-harness-status
+# expo-launchpad-status
 
-Read-only status reporter for the expo-harness pipeline. Reads `docs/harness/state.md` and
+Read-only status reporter for the expo-launchpad pipeline. Reads `docs/harness/state.md` and
 `docs/harness/pipeline-log.md` and prints a summary of the current pipeline state.
 
 All file schemas are defined in `docs/harness-protocol.md` — refer to §2 (`state.md` schema) and
@@ -28,7 +28,7 @@ convention every other phase skill uses.
 If `docs/harness/state.md` does not exist, print:
 
 ```
-No expo-harness run in this directory.
+No expo-launchpad run in this directory.
 ```
 
 Then exit without error — do not create any file, do not treat this as a failure.
@@ -61,7 +61,7 @@ skip this section of the report.
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- expo-harness pipeline status
+ expo-launchpad pipeline status
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   Status        : <status>
   Current phase : <current_phase>
@@ -77,7 +77,7 @@ If `status` is `paused`, append:
 
 ```
   ⚠  Paused — reason: <pause_reason>
-  Run /expo-harness --resume (or /expo-harness-resume) to continue.
+  Run /expo-launchpad --resume (or /expo-launchpad-resume) to continue.
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 

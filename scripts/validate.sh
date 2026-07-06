@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Test harness for the expo-harness plugin. Run: bash scripts/validate.sh
+# Test harness for the expo-launchpad plugin. Run: bash scripts/validate.sh
 set -uo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"; cd "$ROOT"
 fail=0; err(){ echo "FAIL: $*"; fail=1; }; ok(){ echo "ok:   $*"; }
@@ -12,7 +12,7 @@ jq -e '.name and .version and .description' .claude-plugin/plugin.json >/dev/nul
   || err "plugin.json missing name/version/description"
 
 # 2. Skills: frontmatter with name + description + argument-hint + allowed-tools
-EXPECTED_SKILLS="expo-harness expo-harness-research expo-harness-plan expo-harness-design expo-harness-contract expo-harness-generator expo-harness-evaluator expo-harness-resume expo-harness-status"
+EXPECTED_SKILLS="expo-launchpad expo-launchpad-research expo-launchpad-plan expo-launchpad-design expo-launchpad-contract expo-launchpad-generator expo-launchpad-evaluator expo-launchpad-resume expo-launchpad-status"
 for name in $EXPECTED_SKILLS; do
   s="skills/$name/SKILL.md"
   if [ ! -f "$s" ]; then err "$s missing"; continue; fi
@@ -60,9 +60,9 @@ done < <(grep -rhoE 'docs/[A-Za-z0-9_./-]+\.md' skills 2>/dev/null | sort -u)
 [ "$miss" -eq 0 ] && ok "plugin-doc cross-references resolve" || err "dangling docs cross-reference(s)"
 
 # 5. Orchestrator dispatches every phase role
-if [ -f skills/expo-harness/SKILL.md ]; then
+if [ -f skills/expo-launchpad/SKILL.md ]; then
   for role in research plan design contract generator evaluator; do
-    grep -q "expo-harness-$role" skills/expo-harness/SKILL.md || err "orchestrator missing dispatch: $role"
+    grep -q "expo-launchpad-$role" skills/expo-launchpad/SKILL.md || err "orchestrator missing dispatch: $role"
   done
   ok "orchestrator dispatch table"
 fi

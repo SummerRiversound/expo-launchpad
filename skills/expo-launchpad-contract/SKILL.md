@@ -1,13 +1,13 @@
 ---
-name: expo-harness-contract
+name: expo-launchpad-contract
 description: Phase A contract — propose the 8 Mandatory Hard Gates, the Platform-Robustness Gates (R1–R11), and 5–10 Functional Criteria derived from the PRD; mark the contract AGREED (1-pass default, rigorous self-review in --strict) and advance the pipeline to generator.
 argument-hint: ""
 allowed-tools: [Agent, Read, Write, Edit, Bash]
 ---
 
-# expo-harness-contract
+# expo-launchpad-contract
 
-Phase A, step 4 of the expo-harness pipeline. Reads the PRD, the design doc, and `config.md`,
+Phase A, step 4 of the expo-launchpad pipeline. Reads the PRD, the design doc, and `config.md`,
 proposes verifiable completion criteria (Mandatory Hard Gates + Platform-Robustness Gates +
 Functional Criteria), and marks the contract AGREED before handing off to the generator.
 
@@ -31,7 +31,7 @@ Extract:
 | `strict_mode` | If `true`, run `--strict` negotiation; if `false` (or absent), run default 1-pass |
 
 If `config.md` does not exist, abort with:
-`expo-harness-contract: docs/harness/config.md not found — run the orchestrator to bootstrap first.`
+`expo-launchpad-contract: docs/harness/config.md not found — run the orchestrator to bootstrap first.`
 
 ### 2. Read the latest PRD
 

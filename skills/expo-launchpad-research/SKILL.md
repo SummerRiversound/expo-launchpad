@@ -1,13 +1,13 @@
 ---
-name: expo-harness-research
+name: expo-launchpad-research
 description: Phase A research — kind-aware market/genre (game) or category/competitor (app) discovery, concept proposal via AskUserQuestion, a store clone-avoidance check (App Store 4.3 / Google Play impersonation), and the research spec write-up.
 argument-hint: ""
 allowed-tools: [Agent, Read, Write, Edit, Bash, WebSearch, WebFetch, AskUserQuestion]
 ---
 
-# expo-harness-research
+# expo-launchpad-research
 
-Phase A, step 1 of the expo-harness pipeline. Reads the user's raw idea from `config.md`, performs
+Phase A, step 1 of the expo-launchpad pipeline. Reads the user's raw idea from `config.md`, performs
 kind-aware market research if needed, proposes 2-3 concrete concepts, queries the user via
 AskUserQuestion to pick one, runs a store clone-avoidance check on the choice, then writes the
 research spec and advances the pipeline state.
@@ -40,7 +40,7 @@ Read `docs/harness/config.md` and extract:
   generated project artifacts follow `default_language`.
 
 If `config.md` does not exist, abort with:
-`expo-harness-research: docs/harness/config.md not found — run the orchestrator to bootstrap first.`
+`expo-launchpad-research: docs/harness/config.md not found — run the orchestrator to bootstrap first.`
 
 ---
 
