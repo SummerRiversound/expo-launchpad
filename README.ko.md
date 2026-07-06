@@ -1,24 +1,34 @@
-# expo-launchpad
+# Expo Launchpad
 
-Expo(React Native + TypeScript) 앱/게임을 위한 **아이디어 → 실행 가능한 빌드** 파이프라인을
-구동하는 설치형 Claude Code 플러그인입니다.
-[`flutter-flame-harness`](https://github.com/tjdrhs90/flutter-flame-harness)의 충실한 구조적
-포팅판으로 — 동일한 상태 머신, 동일한 컨트랙트, 동일한 generator ⇄ evaluator 회의적 QA 루프를
-Expo/RN/TS 스택에 맞게 재구성했습니다.
+아이디어에서 출시 가능한 iOS·Android 앱·게임까지 — 회의적 QA를 갖춘 Expo(React Native + TypeScript) 기반 AI 하네스.
 
-**Phase A만 구현**: 아이디어 → 실행 가능한 빌드까지이며, 사람의 리뷰 대기(pause)에서 끝납니다.
-배포(EAS Build/Submit, 스토어 등록, 광고)는 미래의 Phase B이며 여기서는 구현되지 않았습니다.
+> **Status:** 초기 단계 / Phase A(아이디어 → 실행 가능한 빌드)까지만 구현. 실제 앱으로 end-to-end 검증은 아직 안 됨. 배포(EAS + 스토어 제출)는 계획된 Phase B. macOS + Xcode iOS 시뮬레이터 필요.
+
+## 개요
+
+Claude Code 플러그인으로, 아이디어를 리서치 → 기획 → 디자인 → generator ⇄ evaluator 빌드
+루프에 태워 플레이 가능한 Expo 앱·게임으로 만듭니다. evaluator는 회의적 QA로 동작합니다 —
+시뮬레이터에서 빌드를 실제로 실행하고, 핵심 플로우를 조작하고, 스크린샷을 살펴본 뒤에야
+PASS를 내립니다. 코드 리뷰만으로는 PASS를 받을 수 없습니다. 크로스플랫폼(iOS + Android)
+앱·게임 프로토타입을 스캐폴딩 작업 없이 만들고 싶은 1인 개발자·소규모 팀을 위한 도구입니다.
+
+## Requirements
+
+- Claude Code
+- macOS + Xcode iOS 시뮬레이터 — evaluator가 `npx expo run:ios`로 빌드를 판정
+- Node
+- Maestro(선택) — E2E 플로우 검증에 사용
 
 ## 설치
 
-이 저장소는 자체 로컬 마켓플레이스(`.claude-plugin/marketplace.json`)를 포함합니다:
+이 저장소는 자체 마켓플레이스(`.claude-plugin/marketplace.json`)를 포함합니다:
 
 ```
-/plugin marketplace add <path-to-expo-launchpad>
+/plugin marketplace add https://github.com/SummerRiversound/expo-launchpad
 /plugin install expo-launchpad
 ```
 
-## 사용법
+## Quickstart
 
 ```
 /expo-launchpad --kind app "todo app"
@@ -79,14 +89,15 @@ research → plan → design → contract → generator ⇄ evaluator → paused
 - **Platform-Robustness Gates R1–R11** — 출시된 RN 앱들에서 얻은 오디오, 햅틱, 앱 라이프사이클,
   입력/UI, 접근성, 성능, 빌드/플랫폼, 퍼시스턴스 패턴. 전체 패턴 세트: `docs/app-gotchas.md`.
 
-## Phase B 로드맵 (미구현)
+## 로드맵 (Phase B)
 
-EAS Build/Submit, 스토어 스크린샷·메타데이터, AdMob 연동.
+미구현: EAS Build/Submit, 스토어 스크린샷·메타데이터, AdMob 연동.
 
 ## 크레딧
 
-[`flutter-flame-harness`](https://github.com/tjdrhs90/flutter-flame-harness)에서 포팅했습니다.
+[`flutter-flame-harness`](https://github.com/tjdrhs90/flutter-flame-harness)(MIT, tjdrhs90)의
+구조적 포팅판입니다.
 
 ## License
 
-MIT — [LICENSE](./LICENSE) 참고.
+MIT — [LICENSE](./LICENSE) 참고; 저작자 표시는 [NOTICE](./NOTICE)에 있습니다.

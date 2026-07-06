@@ -1,23 +1,35 @@
-# expo-launchpad
+# Expo Launchpad
 
-An installable Claude Code plugin that drives an **idea → playable** pipeline for Expo (React
-Native + TypeScript) apps and games. A faithful structural port of
-[`flutter-flame-harness`](https://github.com/tjdrhs90/flutter-flame-harness) — same state machine,
-same contract, same generator ⇄ evaluator skeptical-QA loop — retargeted to the Expo/RN/TS stack.
+From idea to a shippable iOS + Android app or game — a skeptical-QA AI harness built on Expo (React Native + TypeScript).
 
-**Phase A only**: idea → playable, ending at a human-review pause. Deploy (EAS Build/Submit, store
-listings, ads) is a future Phase B — not implemented here.
+> **Status:** Early / Phase A (idea → playable). Not yet run end-to-end on a shipped app. Deploy (EAS + store submission) is a planned Phase B. Requires macOS + an Xcode iOS Simulator.
+
+## What it is
+
+A Claude Code plugin that drives an idea through research, planning, design, and a
+generator ⇄ evaluator build loop until it's a playable Expo app or game. The evaluator is
+skeptical QA: it runs the build on a simulator, drives the core flow, and studies
+screenshots before it ever hands out a PASS — code review alone doesn't count. Built for
+solo builders and small teams who want a cross-platform (iOS + Android) app or game
+prototyped without hand-rolling the scaffolding themselves.
+
+## Requirements
+
+- Claude Code
+- macOS + an Xcode iOS Simulator — the evaluator runs `npx expo run:ios` to judge the build
+- Node
+- Maestro (optional) — powers the E2E flow checks
 
 ## Install
 
-This repo ships its own local marketplace (`.claude-plugin/marketplace.json`):
+This repo ships its own marketplace (`.claude-plugin/marketplace.json`):
 
 ```
-/plugin marketplace add <path-to-expo-launchpad>
+/plugin marketplace add https://github.com/SummerRiversound/expo-launchpad
 /plugin install expo-launchpad
 ```
 
-## Usage
+## Quickstart
 
 ```
 /expo-launchpad --kind app "todo app"
@@ -78,14 +90,15 @@ Full state machine, file schemas, and the phase-transition table: `docs/harness-
   performance, build/platform, persistence patterns hard-won from shipped RN apps. Full pattern
   set: `docs/app-gotchas.md`.
 
-## Phase B roadmap (not implemented)
+## Roadmap (Phase B)
 
-EAS Build/Submit, store screenshots and metadata, AdMob integration.
+Not yet implemented: EAS Build/Submit, store screenshots and metadata, AdMob integration.
 
 ## Credit
 
-Ported from [`flutter-flame-harness`](https://github.com/tjdrhs90/flutter-flame-harness).
+A structural port of [`flutter-flame-harness`](https://github.com/tjdrhs90/flutter-flame-harness)
+(MIT) by tjdrhs90.
 
 ## License
 
-MIT — see [LICENSE](./LICENSE).
+MIT — see [LICENSE](./LICENSE); attribution in [NOTICE](./NOTICE).
