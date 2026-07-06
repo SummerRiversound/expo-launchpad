@@ -34,34 +34,44 @@ launch the app on a simulator, drive the core flow, capture and study screenshot
 ### Workspace root vs. project directory
 
 `docs/harness/` lives at the **workspace root** (the directory the pipeline was invoked from) for
-the entire pipeline — it is never inside the generated project. Every harness file (`state.md`,
-`config.md`, `contract.md`, `handoff/*`, `feedback/*`, `pipeline-log.md`, `build-log.md`,
-`screenshots/*`) is read/written at the workspace-root path `docs/harness/...`. The generated
-Expo project lives in its own subdirectory, `<workspace root>/<app_slug>/`. Build/test/run
-commands (`tsc --noEmit`, `expo lint`, `jest`, `expo run:ios`) `cd` into `<app_slug>/` — that `cd`
-is scoped to those commands only. **Screenshots and all harness writes stay at the workspace-root
-`docs/harness/...` path even while the shell is still `cd`'d into `<app_slug>/`** — use a path
-relative back out (`../docs/harness/screenshots/...`) or `cd` back to the workspace root before
-writing; never write into `<app_slug>/docs/harness/`.
+the entire pipeline — it is never inside the generated project. Before any other step, capture the
+workspace root once:
+
+```bash
+ROOT="$(pwd)"
+```
+
+From this point on, **every harness file** (`state.md`, `config.md`, `contract.md`, `handoff/*`,
+`feedback/*`, `pipeline-log.md`, `build-log.md`, `screenshots/*`) is read/written at the
+root-absolute path `"$ROOT/docs/harness/..."` — never a path relative to whatever directory the
+shell happens to be in at the time. `ROOT` is fixed once, the same way `<app_slug>` and `<N>` are:
+treat it as a value substituted verbatim into every command below, not a live shell variable that
+needs to survive between separate tool invocations.
+
+The generated Expo project lives in its own subdirectory, `"$ROOT/<app_slug>/"`. **Only**
+build/test/run commands (`tsc --noEmit`, `expo lint`, `jest`, `expo run:ios`, Maestro) `cd` into
+`<app_slug>/` — that `cd` is scoped to those commands only and never affects where harness files
+are written. Never write into `<app_slug>/docs/harness/`.
 
 Before any check, load:
 
-1. `docs/harness/state.md` — extract `current_round` (integer ≥ 1) and confirm
+1. `"$ROOT/docs/harness/state.md"` — extract `current_round` (integer ≥ 1) and confirm
    `next_role: evaluator`.
-2. `docs/harness/config.md` — extract `app_slug`, `kind`, `strict_mode` (bool), `max_rounds` (int),
-   `auto_deploy` (bool), `default_language`.
-3. `docs/harness/contract.md` — parse `## Mandatory Hard Gates`, `## Platform-Robustness Gates`,
-   and `## Functional Criteria`. Confirm `## Status: AGREED` is present; if missing, abort with:
+2. `"$ROOT/docs/harness/config.md"` — extract `app_slug`, `kind`, `strict_mode` (bool),
+   `max_rounds` (int), `auto_deploy` (bool), `default_language`.
+3. `"$ROOT/docs/harness/contract.md"` — parse `## Mandatory Hard Gates`,
+   `## Platform-Robustness Gates`, and `## Functional Criteria`. Confirm `## Status: AGREED` is
+   present; if missing, abort with:
    `expo-harness-evaluator: contract not AGREED — run expo-harness-contract first`.
-4. `docs/harness/handoff/round-<N>-gen.md` (where N = `current_round`) per protocol §4. If the
-   file is missing, abort with:
+4. `"$ROOT/docs/harness/handoff/round-<N>-gen.md"` (where N = `current_round`) per protocol §4. If
+   the file is missing, abort with:
    `expo-harness-evaluator: handoff for round <N> not found — generator must run first`.
 
 ---
 
 ## 6.1 Functional Check (default — always runs)
 
-Run every step in order, from `<workspace root>/<app_slug>/` unless noted. A failure on any
+Run every step in order, from `"$ROOT/<app_slug>/"` unless noted. A failure on any
 **Mandatory Hard Gate** from `contract.md` is an immediate FAIL — do not skip remaining steps
 (finish collecting evidence), but the verdict is already decided.
 
@@ -109,7 +119,33 @@ Any tuning-shaped number (3+ digits) outside `config/gameConfig.ts` / `config/ap
 Hard Gate failure (contract gate 4). Exclude clearly-justified non-tuning constants (e.g. HTTP
 status codes) if commented; document any exclusion in the feedback file.
 
-### Step 5 — i18n key-parity check
+### Step 5 — Content-as-data check (Hard Gate 5)
+
+Run from the workspace root, same scope as Steps 3/4. Confirm content catalogs exist under
+`data/`, then scan the logic directories for inline literal content that should live in one of
+those catalogs instead (generator 6b.3 / 6b.1 puts levels/enemies/waves and typed data models under
+`data/` for exactly this reason — see `docs/harness-protocol.md` §3):
+
+```bash
+ls <app_slug>/data/*.ts >/dev/null 2>&1 || echo "FAIL: no content catalogs under data/ (Hard Gate 5)"
+# kind: game — flag inline arrays of >=3 object-literal entries (entity/level/wave data) in game/ logic
+grep -rlE "=\s*\[" <app_slug>/game/ 2>/dev/null | grep -v node_modules | while read -r f; do
+  n=$(awk '/=\s*\[/,/\];/' "$f" | grep -c "{")
+  [ "${n:-0}" -ge 3 ] && echo "FAIL: $f — inline array with $n object-literal entries; level/enemy/wave data belongs in data/, not game/ logic"
+done
+# kind: app — flag inline arrays of >=3 object-literal entries in screen/feature code outside data/
+grep -rlE "=\s*\[" <app_slug>/app/ <app_slug>/services/ <app_slug>/state/ 2>/dev/null | grep -v node_modules | while read -r f; do
+  n=$(awk '/=\s*\[/,/\];/' "$f" | grep -c "{")
+  [ "${n:-0}" -ge 3 ] && echo "FAIL: $f — inline array with $n object-literal entries; screen/list data belongs in data/, not feature code"
+done
+```
+
+A missing `data/` catalog, or a logic file with content hardcoded inline instead of pulled from a
+`data/` catalog, is a Hard Gate failure (contract gate 5). The two checks are complementary — a
+project can pass one and fail the other (e.g. an empty `data/` folder with all content still
+hardcoded in `game/`).
+
+### Step 6 — i18n key-parity check
 
 The generator centralizes every locale's strings in a single `resources` object in
 `i18n/i18n.ts` (`templates/i18n.ts.template`) — there are no per-locale files to diff. Compare
@@ -137,7 +173,7 @@ console.log('i18n OK', Object.keys(keysets));
 Missing keys in any configured locale (`default_language` and `en` when different) is a Hard Gate
 failure (contract gate 6).
 
-### Step 6 — Platform-Robustness Gates (R1–R11)
+### Step 7 — Platform-Robustness Gates (R1–R11)
 
 Verify the `## Platform-Robustness Gates` from `contract.md` / `docs/app-gotchas.md`. Run from
 inside `<app_slug>/`:
@@ -148,7 +184,8 @@ ls game/systems/audioSystem.ts 2>/dev/null && grep -c "createAudioPlayer" game/s
 grep -n "try" game/systems/audioSystem.ts 2>/dev/null | grep -q . || echo "CHECK: audio calls not wrapped in try/catch"
 grep -rn "AppState" game/systems/audioSystem.ts game/scene/*.tsx 2>/dev/null || echo "CHECK: BGM stop on background/unmount not found"
 # R2 haptics (if a haptics helper exists)
-ls game/systems/haptics.ts 2>/dev/null && grep -nE "Platform\.OS|enabled|try" game/systems/haptics.ts
+ls game/systems/haptics.ts 2>/dev/null && grep -nE "Platform\.OS|enabled|try" game/systems/haptics.ts \
+  || echo "CHECK: haptics helper missing or unguarded"
 # R3 lifecycle
 grep -rn "AppState.addEventListener" . --include='*.ts' --include='*.tsx' | grep -v node_modules || echo "FAIL: no AppState lifecycle subscription"
 # R4 performance: flag construction inside the per-frame callback
@@ -213,14 +250,14 @@ Reduce Motion not read is CHECK-level unless the app leans on heavy motion. **Te
 passing `jest` run that only checks config constants is a FAIL — there must be ≥3 system unit
 tests + ≥1 component/RTL test + ≥1 Maestro flow, and all must pass.
 
-### Step 7 — Contract criteria evidence
+### Step 8 — Contract criteria evidence
 
 For each criterion in `contract.md`'s `## Mandatory Hard Gates`, `## Platform-Robustness Gates`,
 and `## Functional Criteria`, record a row in the feedback evidence table showing the command run,
 the result, and any screenshot/log path. Do not mark a criterion DONE without a command that
 directly verifies it.
 
-### Step 8 — Launch on simulator and drive the core flow
+### Step 9 — Launch on simulator and drive the core flow
 
 **This step is mandatory. A PASS verdict is not valid without completing it.**
 
@@ -238,27 +275,32 @@ cd <app_slug>
 npx expo run:ios
 ```
 
+cwd is now inside `<app_slug>/` (from the `cd` above) and stays there for the rest of this step.
+Every harness-file path below is root-absolute (`"$ROOT/docs/harness/..."`) precisely so it does
+not matter that cwd is inside `<app_slug>/`.
+
 While the app is running:
 
-0. From the workspace root, create the screenshots directory if it does not already exist:
+0. Create the screenshots directory if it does not already exist:
    ```bash
-   mkdir -p docs/harness/screenshots
+   mkdir -p "$ROOT/docs/harness/screenshots"
    ```
 1. If a Maestro flow exists (`.maestro/core-loop.yaml` or `.maestro/primary-journey.yaml`, written
    by the generator per its 6c.8), run it against the booted simulator — this is the automated
-   drive of the core loop/primary journey and doubles as evidence for R11's Maestro requirement:
+   drive of the core loop/primary journey and doubles as evidence for R11's Maestro requirement.
+   cwd is already inside `<app_slug>/`, so the flow path is relative to it:
    ```bash
-   maestro test <app_slug>/.maestro/*.yaml
+   maestro test .maestro/*.yaml
    ```
    Any step failure is a Hard Gate failure (contract gate 7).
 2. Regardless of the Maestro result, manually confirm the flow by capturing screenshots at key
    states — main screen/menu, mid-flow (gameplay or a primary journey step), and the end state
-   (game-over/win, or the journey's final screen). Write each into the **workspace-root**
-   screenshots directory (cwd is still inside `<app_slug>/` — path back out):
+   (game-over/win, or the journey's final screen). Write each to the root-absolute screenshots
+   path so it lands correctly regardless of cwd:
    ```bash
-   xcrun simctl io booted screenshot ../docs/harness/screenshots/round-<N>-ios-menu.png
-   xcrun simctl io booted screenshot ../docs/harness/screenshots/round-<N>-ios-mid.png
-   xcrun simctl io booted screenshot ../docs/harness/screenshots/round-<N>-ios-end.png
+   xcrun simctl io booted screenshot "$ROOT/docs/harness/screenshots/round-<N>-ios-menu.png"
+   xcrun simctl io booted screenshot "$ROOT/docs/harness/screenshots/round-<N>-ios-mid.png"
+   xcrun simctl io booted screenshot "$ROOT/docs/harness/screenshots/round-<N>-ios-end.png"
    ```
 3. **Study each screenshot carefully.** Check for: blank/white screens, visual glitches, missing
    assets, overlapping UI, wrong language, or any rendering error.
@@ -341,7 +383,7 @@ forced-advance note in the feedback file, and proceed with the same PASS-path tr
 
 ### Write feedback/round-N-qa.md
 
-Create `docs/harness/feedback/round-<N>-qa.md` (workspace root) following the layout in
+Create `"$ROOT/docs/harness/feedback/round-<N>-qa.md"` following the layout in
 `docs/harness-protocol.md` §5. Fill:
 
 - `## Verdict` — **PASS** or **FAIL** (bold).
@@ -353,9 +395,11 @@ as evidence.
 
 ### Update state.md (PASS, or forced advance at max_rounds)
 
-On PASS, the app/game has been built and passed QA — but Phase A ends at a **human-approval gate**
-so the user can actually run and approve it before anything further happens. Read `auto_deploy`
-from `docs/harness/config.md`:
+On PASS, the app/game has been built and passed QA. Read `auto_deploy` from
+`"$ROOT/docs/harness/config.md"` — it decides whether Phase A stops at a **human-approval gate** or
+terminates on its own, since Phase A has no admob/build/deploy skill yet (per
+`docs/harness-protocol.md` §7's Phase B seam note) and there is nothing further to dispatch to
+either way.
 
 **Default (`auto_deploy: false`) — pause for human review.**
 
@@ -367,22 +411,9 @@ pause_reason: manual_action
 updated_at: "<ISO-8601 UTC now>"
 ```
 
-**`auto_deploy: true` — no pause.**
-
-```yaml
-status: running
-current_phase: evaluator
-next_role: evaluator
-updated_at: "<ISO-8601 UTC now>"
-```
-
-Leave `current_round`, `created_at`, and `resume_attempts` unchanged in both cases (and
-`pause_reason` unchanged in the `auto_deploy: true` case). **`next_role` is left at `evaluator`
-in both branches** — Phase A has no admob/build/deploy skill yet (per
-`docs/harness-protocol.md` §7's Phase B seam note), so there is nothing further to dispatch to.
-The evaluator's job ends at recording the PASS; a future `expo-harness-resume` is responsible for
-recognizing this state (current_phase `evaluator`, a PASS on record) and finalizing
-`status: completed` on `--resume`.
+Leave `current_round`, `created_at`, and `resume_attempts` unchanged. The evaluator's job ends at
+recording the PASS; a future `expo-harness-resume` is responsible for recognizing this state
+(current_phase `evaluator`, a PASS on record) and finalizing `status: completed` on `--resume`.
 
 Print a review checklist for the user, in `default_language` (translate the following template;
 an example Korean rendering follows):
@@ -397,11 +428,41 @@ Korean rendering (when `default_language: ko`):
 > `docs/harness/screenshots/` 의 QA 스크린샷과 `docs/harness/feedback/round-<N>-qa.md` 를 확인하세요.
 > 만족하면 `/expo-harness --resume` 를 실행하세요.
 
+**`auto_deploy: true` — terminate, no pause.** `status: completed` is a real terminal state: the
+orchestrator's dispatch loop (`skills/expo-harness/SKILL.md`) exits as soon as it sees
+`status: completed` and never re-dispatches `next_role`. Do not leave `status: running` here —
+`next_role: evaluator` unchanged plus a running status would make the dispatch loop invoke this
+skill again on every pass (its anti-loop guard only aborts when *neither* `updated_at` nor
+`next_role` changed, and `updated_at` always changes), rebuilding and re-booting the simulator
+forever.
+
+```yaml
+status: completed
+current_phase: evaluator
+next_role: ""
+updated_at: "<ISO-8601 UTC now>"
+```
+
+Leave `current_round`, `created_at`, `resume_attempts`, and `pause_reason` unchanged. `next_role`
+is cleared because `completed` is terminal regardless — this is just for cleanliness, not because
+anything reads it once the run is done.
+
+Print a brief completion summary for the user, in `default_language` (translate the following
+template; an example Korean rendering follows):
+
+> Build + QA passed and `auto_deploy` is on — the pipeline is complete. See
+> `docs/harness/screenshots/` and `docs/harness/feedback/round-<N>-qa.md` for the QA evidence.
+
+Korean rendering (when `default_language: ko`):
+
+> 빌드 + QA 통과, `auto_deploy` 설정으로 파이프라인이 완료되었습니다. QA 근거는
+> `docs/harness/screenshots/` 와 `docs/harness/feedback/round-<N>-qa.md` 를 참고하세요.
+
 ### Update state.md (FAIL)
 
-On FAIL (and `current_round < max_rounds`), update `docs/harness/state.md` per protocol §2 and the
-`evaluator → generator` transition in §7. Increment `current_round` and set `status: running`
-atomically:
+On FAIL (and `current_round < max_rounds`), update `"$ROOT/docs/harness/state.md"` per protocol §2
+and the `evaluator → generator` transition in §7. Increment `current_round` and set
+`status: running` atomically:
 
 ```yaml
 status: running
@@ -417,7 +478,7 @@ the next round is a fresh feedback-driven pass, so the generator must not skip s
 
 ### Append to build-log.md
 
-Append one row to `docs/harness/build-log.md` per protocol §6:
+Append one row to `"$ROOT/docs/harness/build-log.md"` per protocol §6:
 
 ```
 | <N> | evaluator | PASS/FAIL | <duration> | <one-line summary> |
@@ -425,10 +486,10 @@ Append one row to `docs/harness/build-log.md` per protocol §6:
 
 ### Append to pipeline-log.md
 
-Append one row to `docs/harness/pipeline-log.md` per protocol §6:
+Append one row to `"$ROOT/docs/harness/pipeline-log.md"` per protocol §6:
 
 ```
-| <ISO-8601 UTC now> | evaluator | PASS/FAIL | round <N>; next: evaluator (paused)/generator |
+| <ISO-8601 UTC now> | evaluator | PASS/FAIL | round <N>; next: evaluator (paused)/generator/completed |
 ```
 
 When the PASS path pauses for the human-review gate (default, `auto_deploy: false`), additionally
@@ -438,6 +499,13 @@ append a `pause` event row:
 | <ISO-8601 UTC now> | evaluator | pause | manual_action: run/approve the built app before finishing |
 ```
 
+When the PASS path terminates instead (`auto_deploy: true`), additionally append a `complete`
+event row:
+
+```
+| <ISO-8601 UTC now> | evaluator | complete | status: completed (auto_deploy) |
+```
+
 ---
 
 ## Error Handling
@@ -445,7 +513,7 @@ append a `pause` event row:
 - If `contract.md` is missing or has no `## Status: AGREED`, abort immediately.
 - If `handoff/round-<N>-gen.md` is missing, abort with a clear message; do not set a FAIL
   verdict — the generator has not run yet.
-- If the simulator cannot be booted (headless CI), document the failure, skip Step 8, and set the
-  verdict to FAIL with fix: "boot a simulator and complete Step 8."
+- If the simulator cannot be booted (headless CI), document the failure, skip Step 9, and set the
+  verdict to FAIL with fix: "boot a simulator and complete Step 9."
 - If any agent in 6.3 returns an error (not FAIL, but a tool error), retry once, then count it as
   FAIL with note "agent error — retry required."
