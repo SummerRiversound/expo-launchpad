@@ -11,12 +11,15 @@ gracefully (silent audio, no-op haptic, fallback UI) — the app stays usable.
 
 ---
 
-## Audio (R1)
+## Audio
 
-- **Frequent SFX → a small `Audio.Sound` pool, not a `new Sound()` per shot.** Creating a fresh
-  `expo-audio` player per call allocates a native resource each time, causing stutter during bursts
-  (taps, notifications, combo hits). Pre-load 1–3 `Audio.Sound` instances per frequent SFX up front
-  and replay them from the pool. Rare one-offs (success, error) may still load on demand.
+- **R1 — Audio safe.** **Frequent SFX → a small pool of pre-loaded `AudioPlayer` instances, not a
+  new player per shot.** `expo-audio`'s API is `createAudioPlayer(source)` (or the
+  `useAudioPlayer(source)` hook), returning an `AudioPlayer` (`.play()`, `.pause()`, `.seekTo()`,
+  `.volume`, `.remove()`) — there's no built-in pool. Creating a fresh player per call allocates a
+  native resource each time, causing stutter during bursts (taps, notifications, combo hits).
+  Pre-load 1–3 `AudioPlayer` instances per frequent SFX via `createAudioPlayer` up front and cycle
+  through them on each trigger. Rare one-offs (success, error) may still load on demand.
 - **Throttle rapid repeats** (~70 ms): keep a `Map<string, number>` of last-played timestamps; skip
   a key if it fired within the window. Collapses a burst into a steady click.
 - **Graceful fallback**: wrap every load and play call in try/catch; if an asset is missing, log via
@@ -27,21 +30,22 @@ gracefully (silent audio, no-op haptic, fallback UI) — the app stays usable.
 - **Volume caps**: define per-channel caps (e.g. BGM ≤ 0.2, SFX ≤ 0.7); the user's volume slider is
   a fraction of the cap, so 100% is a safe level, not ear-splitting.
 
-## Haptics (R2)
+## Haptics
 
-- **Provide a `haptics.ts` helper**; never call `Haptics.*` raw from feature code. The helper must:
+- **R2 — Haptics safe.** **Provide a `haptics.ts` helper**; never call `Haptics.*` raw from feature
+  code. The helper must:
   - **Platform-guard**: no-op unless `Platform.OS === 'ios' || Platform.OS === 'android'` (web has
     no haptics API and must not throw).
   - **Throttle** (~60 ms global minimum gap) — bursts otherwise machine-gun the vibration motor.
   - **`enabled` toggle**, persisted (via `AsyncStorage`), so users can turn it off.
   - **try/catch** every call (simulators / unsupported devices throw).
 
-## App lifecycle (R3)
+## App lifecycle
 
-- **Background = pause**: subscribe to RN `AppState` (`AppState.addEventListener('change', ...)`);
-  on `background`/`inactive` cancel the render loop (`cancelAnimationFrame` / pause the Skia clock)
-  and pause audio; on `active` reverse both. Prevents battery drain, background audio, and missed
-  pauses.
+- **R3 — App lifecycle safe.** **Background = pause**: subscribe to RN `AppState`
+  (`AppState.addEventListener('change', ...)`); on `background`/`inactive` cancel the render loop
+  (`cancelAnimationFrame` / pause the Skia clock) and pause audio; on `active` reverse both.
+  Prevents battery drain, background audio, and missed pauses.
 - **Teardown cleanup**: on unmount, stop audio and cancel all timers/listeners/subscriptions
   (including the `AppState` subscription itself). Never re-access loop/animation state after
   teardown has started.
@@ -56,10 +60,11 @@ gracefully (silent audio, no-op haptic, fallback UI) — the app stays usable.
   dialog width (max-width) so notches, tablets, and landscape don't clip or over-stretch the UI.
 - **Block input during splash/transitions** so a stray tap doesn't fall through into the next screen.
 
-## Accessibility & safety (R10)
+## Accessibility & safety
 
-- **No flashing faster than 3 flashes/second** (photosensitive-seizure safety — WCAG 2.3.1; app
-  stores flag it). Keep any flash/strobe effect ≤3 Hz.
+- **R10 — Accessibility safe.** **No flashing faster than 3 flashes/second**
+  (photosensitive-seizure safety — WCAG 2.3.1; app stores flag it). Keep any flash/strobe effect
+  ≤3 Hz.
 - **Respect OS "Reduce Motion"** — read `AccessibilityInfo.isReduceMotionEnabled()`. When true, damp
   or skip large motion effects (screen shake, big transitions, flashing). Route it through one flag
   so effects check it consistently.
@@ -68,39 +73,49 @@ gracefully (silent audio, no-op haptic, fallback UI) — the app stays usable.
   screen-reader navigable — icon-only buttons especially.
 - **Text contrast ≥4.5:1** against its background.
 
-## Performance (R4)
+## Performance
 
-- **No per-frame allocations in the Skia/`requestAnimationFrame` loop** — reuse objects and hoist
-  `Skia.Paint` (and other reusable instances) outside the loop instead of constructing them per
-  frame.
+- **R4 — Performance safe.** **No per-frame allocations in the Skia/`requestAnimationFrame` loop**
+  — reuse objects and hoist `Skia.Paint` (and other reusable instances) outside the loop instead of
+  constructing them per frame.
+- **Drive the loop with `useFrameCallback`** (from `@shopify/react-native-skia`) — it's the
+  idiomatic per-frame hook for Skia-based canvases. Per-frame work inside it must stay
+  allocation-free: reuse `Skia.Paint`/objects created outside the callback rather than constructing
+  new ones on every frame.
 - **Run animation on the UI thread** via Reanimated shared values / Skia values, not React state —
   driving frame-by-frame motion through `setState` forces a full re-render every frame.
 - **Memoize selectors; avoid unnecessary re-renders** with `React.memo` and stable callbacks
   (`useCallback`/`useMemo`) so a parent re-render doesn't cascade into static children.
 
-## Build / platform (R6)
+## Build / platform
 
-- **Bundle id identical across platforms** — `app.json` `ios.bundleIdentifier` must equal
-  `android.package`, byte-for-byte (lowercase `[a-z0-9.]`, no `_`/`-`/uppercase). A default Expo
-  project can leave these diverging; set both explicitly.
+- **R6 — Build/platform safe.** **Bundle id identical across platforms** — `app.json`
+  `ios.bundleIdentifier` must equal `android.package`, byte-for-byte (lowercase `[a-z0-9.]`, no
+  `_`/`-`/uppercase). A default Expo project can leave these diverging; set both explicitly.
 - **Lock one orientation** — decide portrait *or* landscape and set it via `app.json` `orientation`
   plus `expo-screen-orientation` at runtime, so the app can't open in or rotate into the wrong
   orientation.
 - **`expo-doctor` clean** before shipping — resolve every warning it reports.
 - **Asset paths lowercase**: Android is case-sensitive; keep asset file names lowercase.
+- **No dangling assets**: every asset referenced in code must exist and be bundled — a dangling
+  asset path is a runtime error / blank render.
 - **Ship CI from day one**: `.github/workflows/ci.yml` running typecheck (`tsc --noEmit`), lint
   (`expo lint`), and `jest` on push/PR.
 
-## Persistence (R9)
+## Persistence
 
-- **Durable save through a `saveRepository.ts`** that mirrors one JSON blob to both
-  `expo-secure-store` and `AsyncStorage` — `AsyncStorage` alone is not enough (it can be cleared by
-  the OS or lost across app reinstalls); reads go durable-first (`expo-secure-store`), writes go to
-  both, every call wrapped in try/catch.
+- **R9 — Persistence safe.** **Durable save through a `saveRepository.ts`** that mirrors one JSON
+  blob to both `expo-secure-store` and `AsyncStorage` — `AsyncStorage` alone is not enough (it can
+  be cleared by the OS or lost across app reinstalls); reads go durable-first
+  (`expo-secure-store`), writes go to both, every call wrapped in try/catch.
 - **Version the save schema** (a `save_v1` key with per-field migration defaults) so new fields
   don't corrupt an existing save.
 - **Write critical values synchronously at run-end** (score, currency, progress) rather than relying
   only on a later async flush, so a crash or kill mid-run doesn't lose progress.
+- **`expo-secure-store` size cap**: values are limited to ~2 KB per key on iOS/Android, so keep the
+  durable save blob small (only essential fields — high score, currency totals, settings, a
+  `save_v1` version). If it must grow, split across keys or keep the large payload in AsyncStorage
+  with only a pointer/critical subset in SecureStore.
 
 ## Store rejections
 
