@@ -35,5 +35,5 @@ frontmatter that parses as real YAML — quote any scalar value containing a col
 
 - Use [Conventional Commits](https://www.conventionalcommits.org/) (`feat:`, `fix:`, `docs:`,
   `refactor:`, `chore:`, `test:`).
-- Do not add AI-authorship trailers (e.g. "Generated with ...", "Co-Authored-By: Claude ...") to
-  commit messages or PR descriptions.
+- Disclose AI assistance honestly — a `Co-Authored-By:` commit trailer is welcome. Keep PR/issue
+  *comments* free of promotional AI footers.

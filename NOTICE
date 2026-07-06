@@ -5,3 +5,5 @@ This project is a structural port / derivative of flutter-flame-harness
 (https://github.com/tjdrhs90/flutter-flame-harness) by tjdrhs90, licensed under MIT.
 The original Flutter/Flame pipeline design (state machine, contract, generator-evaluator
 skeptical-QA loop) was reimplemented for the Expo / React Native / TypeScript stack.
+
+flutter-flame-harness is Copyright (c) 2026 Seonggon Sim, licensed under the MIT License.
