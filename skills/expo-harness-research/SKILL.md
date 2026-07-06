@@ -30,8 +30,11 @@ Read `docs/harness/config.md` and extract:
   Even when skipping discovery you must still write the research spec.
 - `auto_idea` — boolean (default `false`). When `true`, "Propose & query" and "Clone avoidance"
   auto-decide instead of calling AskUserQuestion: the skill scores its own generated concepts,
-  selects the best, and auto-revises any clone — running fully hands-off. Has no effect when
-  `skip_research: true` (the idea is already taken verbatim — nothing to select).
+  selects the best, and auto-revises any clone — running fully hands-off. Under
+  `skip_research: true`, `auto_idea` has no effect on concept *selection* (the idea is taken
+  verbatim — there is nothing to score or select), but it still governs Clone avoidance: it
+  determines whether a detected clone is auto-revised or surfaced to the user via
+  AskUserQuestion, exactly as it would with Discovery enabled.
 - `default_language` — the concepts, spec prose, and every section of the research spec produced
   in Output are written in this language. This SKILL.md's own prose stays English; only the
   generated project artifacts follow `default_language`.
@@ -47,16 +50,19 @@ If `config.md` does not exist, abort with:
 
 Goal: ground the proposals in real market data. Branch on `kind`.
 
+Before running any WebSearch query below, get the current year via `date +%Y` (Bash) and
+substitute it for `<current-year>` — never hardcode a year, or the queries go stale.
+
 ### 1. Category / chart leaders
 
 - **`kind: game`** — use WebSearch/WebFetch to fetch current top-grossing and top-free mobile game
-  charts (App Store, Google Play). Queries: `"Google Play" top grossing mobile games 2026`,
-  `"App Store" top free games 2026`. Extract at least 10 titles with genre/mechanic (idle clicker,
-  hyper-casual runner, match-3, tower defense, merge, etc.).
+  charts (App Store, Google Play). Queries: `"Google Play" top grossing mobile games <current-year>`,
+  `"App Store" top free games <current-year>`. Extract at least 10 titles with genre/mechanic (idle
+  clicker, hyper-casual runner, match-3, tower defense, merge, etc.).
 - **`kind: app`** — identify the app category closest to `app_idea` (or, if blank, a small set of
   candidate categories) and fetch the current top-ranked apps in that category on both stores.
-  Queries: `"App Store" top apps <category> 2026`, `"Google Play" top apps <category> 2026`.
-  Extract at least 10 titles with their core feature set.
+  Queries: `"App Store" top apps <category> <current-year>`, `"Google Play" top apps <category>
+  <current-year>`. Extract at least 10 titles with their core feature set.
 
 ### 2. Competitor mapping
 
@@ -69,17 +75,18 @@ For the genre/category most aligned with `app_idea` (or the top matches by chart
 
 ### 3. Trend signals
 
-- **`kind: game`** — WebSearch `"mobile game genre trends 2026"` and `"hypercasual game trends
-  2026"`. Extract 2-3 specific signals (e.g. "merge mechanics growing 40% YoY").
-- **`kind: app`** — WebSearch `"<category> app trends 2026"` and `"mobile app category growth
-  2026"`. Extract 2-3 specific signals (e.g. "on-device habit trackers rising").
+- **`kind: game`** — WebSearch `"mobile game genre trends <current-year>"` and `"hypercasual game
+  trends <current-year>"`. Extract 2-3 specific signals (e.g. "merge mechanics growing 40% YoY").
+- **`kind: app`** — WebSearch `"<category> app trends <current-year>"` and `"mobile app category
+  growth <current-year>"`. Extract 2-3 specific signals (e.g. "on-device habit trackers rising").
 
 ---
 
 ## Propose & query
 
-Synthesise Discovery findings (and `app_idea` if provided) into exactly **2-3 concrete concept
-proposals**. Use the field set for the active `kind`:
+> Skip this section when `skip_research: true`.
+
+Use the field set for the active `kind` below, then branch on whether `app_idea` is blank.
 
 ### `kind: game`
 
@@ -101,11 +108,20 @@ proposals**. Use the field set for the active `kind`:
 | Differentiator | One thing that makes it distinct from comparable apps |
 | Monetization hook | One-line note on how monetization could plausibly fit (subscription / freemium moment) — mechanism and config deferred to Phase B |
 
-Present the proposals in a numbered list that is easy to read.
+### If `app_idea` is non-blank — refine the single idea
+
+Refine `app_idea` into exactly **one** concrete concept using the field set above — do not invent
+alternatives. There is no proposal list and no selection step here. Proceed directly to Clone
+avoidance with this concept.
+
+### If `app_idea` is blank — generate & recommend 2-3 concepts
+
+Synthesise Discovery findings into exactly **2-3 concrete concept proposals** using the field set
+above. Present the proposals in a numbered list that is easy to read.
 
 Then branch on `auto_idea`:
 
-### If `auto_idea: false` (default) — ask the user
+#### If `auto_idea: false` (default) — ask the user
 
 Use **AskUserQuestion**:
 
@@ -126,7 +142,7 @@ Is this correct? (yes / describe further)
 
 Repeat until the user confirms.
 
-### If `auto_idea: true` — auto-score and select (no user input)
+#### If `auto_idea: true` — auto-score and select (no user input)
 
 Do **not** call AskUserQuestion. Score each proposal against these weighted criteria and present a
 scoring table:
@@ -159,9 +175,11 @@ proceed to Clone avoidance. Do not query the user.
 ### Check procedure
 
 1. Extract the core mechanic (game) or core value proposition (app) from the chosen concept.
-2. Use WebSearch to find the 3 most similar existing apps/games:
-   - `kind: game` — `"<core mechanic>" mobile game App Store 2025 OR 2026`
-   - `kind: app` — `"<core value proposition>" app App Store OR Google Play 2025 OR 2026`
+2. Use WebSearch to find the 3 most similar existing apps/games (get the current year via
+   `date +%Y`, as in Discovery, and substitute it for `<current-year>`):
+   - `kind: game` — `"<core mechanic>" mobile game App Store <current-year> OR <previous-year>`
+   - `kind: app` — `"<core value proposition>" app App Store OR Google Play <current-year> OR
+     <previous-year>`
 3. For each similar app/game, note: title, mechanic/value proposition, distinctive features.
 4. Apply the clone test: a concept is a **clone** if it shares the same mechanic/value proposition
    AND the same theme/domain AND offers no original feature. A concept is **safe** if it has at
@@ -182,14 +200,34 @@ proceed to Clone avoidance. Do not query the user.
 
    **If `auto_idea: true`** — do **not** call AskUserQuestion. Auto-revise by applying one
    differentiator from the "safe" list above, then re-run the clone check. Retry up to 2 attempts.
-   If still a clone, fall back to the next-highest-scored proposal from Propose & query and run the
-   clone check on it. Record the outcome (which differentiator was applied, or that a fallback was
-   used).
+   If still a clone:
+   - **If a proposal list exists** (i.e. `skip_research` was not `true` — Propose & query ran),
+     fall back to the next-highest-scored proposal from that list and run the clone check on it.
+   - **If no proposal list exists** (`skip_research: true` — Propose & query never ran, so there
+     is nothing to fall back to), ask the user for a new direction via AskUserQuestion despite
+     `auto_idea: true` — a persistent clone on a single skip-research idea cannot be resolved
+     hands-off:
+     ```
+     The provided idea remains too similar to <similar app> on the App Store / Google Play after
+     automatic revision attempts, which may trigger App Store guideline 4.3 or Google Play's
+     impersonation policy. Please describe how you want to differentiate it, or provide a
+     different idea.
+     ```
+     If the run is truly non-interactive (no user available to ask), instead set `state.md` to
+     `status: paused`, `pause_reason: manual_action`, append a note to `pipeline-log.md` explaining
+     that the skip-research idea could not be made clone-safe automatically, and stop — do not
+     write the research spec.
+   Record the outcome (which differentiator was applied, that a fallback proposal was used, or
+   that the run was escalated/paused).
 6. Record the clone-check result in the research spec (see Output) as `SAFE` or `CLONE (resolved)`.
 
 ---
 
 ## Output
+
+Note: step 2 below intentionally overwrites `config.md`'s `app_idea` with the confirmed concept's
+tagline — this is a deliberate side effect, not silent drift, since the plan phase reads the
+refined idea from `config.md` rather than the raw pitch.
 
 ### 1. Write the research spec
 
