@@ -74,8 +74,6 @@ Expo Launchpad は、アイデアを*プレイ可能な* iOS + Android アプリ
   <img src="assets/demo/grainatlas-detail.png" width="240" alt="Trip detail">
 </p>
 
-> 🚧 パイプライン全体のスクリーンキャスト（アイデア入力 → アプリ起動）は引き続き[ロードマップ](#ロードマップ)にあります。
-
 ## クイックスタート
 
 ```text
@@ -174,8 +172,6 @@ evaluator のシミュレーター実行には必要です（`npx expo run:ios` 
 
 - [x] Phase A —— アイデア → プレイ可能な成果物（今回のリリース）
 - [ ] Phase B —— EAS build/submit、ストア用アセット、広告
-- [x] README のサンプルアプリ
-- [ ] パイプライン全体のスクリーンキャスト
 
 ## サポート
 

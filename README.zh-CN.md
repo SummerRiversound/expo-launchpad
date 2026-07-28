@@ -73,8 +73,6 @@ Expo Launchpad 是一个 Claude Code 插件，能把一个创意变成*可玩的
   <img src="assets/demo/grainatlas-detail.png" width="240" alt="Trip detail">
 </p>
 
-> 🚧 完整流程录屏（输入创意 → 应用启动）仍在[路线图](#路线图)中。
-
 ## 快速开始
 
 ```text
@@ -169,8 +167,6 @@ evaluator 的模拟器运行环节需要（`npx expo run:ios` 依赖 Xcode）。
 
 - [x] Phase A —— 创意 → 可玩成品（本次发布）
 - [ ] Phase B —— EAS build/submit、商店素材、广告
-- [x] README 示例应用
-- [ ] 完整流程录屏
 
 ## 支持
 

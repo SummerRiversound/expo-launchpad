@@ -73,8 +73,6 @@ Claude Code 플러그인입니다. 게이트가 걸린 단계별로 기획하고
   <img src="assets/demo/grainatlas-detail.png" width="240" alt="Trip detail">
 </p>
 
-> 🚧 파이프라인 전체 화면 녹화(아이디어 입력 → 앱 부팅)는 아직 [로드맵](#로드맵)에 있습니다.
-
 ## 빠른 시작
 
 ```text
@@ -173,8 +171,6 @@ evaluator의 시뮬레이터 실행에는 필요합니다(`npx expo run:ios`는 
 
 - [x] Phase A — 아이디어 → 플레이 가능한 결과물 (이번 릴리스)
 - [ ] Phase B — EAS build/submit, 스토어 에셋, 광고
-- [x] README 예제 앱
-- [ ] 파이프라인 전체 화면 녹화
 
 ## 후원
 

@@ -73,8 +73,6 @@ generated code → skeptical evaluator on a simulator. No screen was hand-design
   <img src="assets/demo/grainatlas-detail.png" width="240" alt="Trip detail">
 </p>
 
-> 🚧 A full pipeline screencast (typing the idea → the app booting) is still on the [roadmap](#roadmap).
-
 ## Quickstart
 
 ```text
@@ -170,8 +168,6 @@ Yes for the evaluator's simulator run (`npx expo run:ios` needs Xcode).
 
 - [x] Phase A — idea → playable (this release)
 - [ ] Phase B — EAS build/submit, store assets, ads
-- [x] Example apps in the README
-- [ ] Full pipeline screencast
 
 ## Support
 
