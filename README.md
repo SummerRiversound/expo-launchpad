@@ -33,7 +33,6 @@ a simulator and studies screenshots before it ever says "done."
 - [Requirements](#requirements)
 - [Why Expo Launchpad?](#why-expo-launchpad)
 - [FAQ](#faq)
-- [Roadmap](#roadmap)
 - [Support](#support)
 - [Contributing](#contributing)
 - [Credits & License](#credits--license)
@@ -158,16 +157,8 @@ One TypeScript codebase → iOS + Android, with a fast simulator loop the evalua
 **App or game?**
 Both — `--kind app` uses Expo Router; `--kind game` uses a Skia render loop.
 
-**What's Phase B?**
-Deploy: EAS Build/Submit, store screenshots/metadata, ads — planned, not built.
-
 **Do I need a Mac?**
 Yes for the evaluator's simulator run (`npx expo run:ios` needs Xcode).
-
-## Roadmap
-
-- [x] Phase A — idea → playable (this release)
-- [ ] Phase B — EAS build/submit, store assets, ads
 
 ## Support
 

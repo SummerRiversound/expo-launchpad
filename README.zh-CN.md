@@ -33,7 +33,6 @@ Expo Launchpad 是一个 Claude Code 插件，能把一个创意变成*可玩的
 - [环境要求](#环境要求)
 - [为什么选择 Expo Launchpad？](#为什么选择-expo-launchpad)
 - [常见问题](#常见问题)
-- [路线图](#路线图)
 - [支持](#支持)
 - [贡献指南](#贡献指南)
 - [致谢与许可证](#致谢与许可证)
@@ -157,16 +156,8 @@ generator 会分 3 个把关的子阶段（`6a` → `6b` → `6c`）构建，每
 **做应用还是做游戏？**
 两者都支持 —— `--kind app` 使用 Expo Router；`--kind game` 使用 Skia 渲染循环。
 
-**Phase B 是什么？**
-部署相关：EAS Build/Submit、商店截图/元数据、广告接入 —— 已规划，尚未实现。
-
 **需要 Mac 吗？**
 evaluator 的模拟器运行环节需要（`npx expo run:ios` 依赖 Xcode）。
-
-## 路线图
-
-- [x] Phase A —— 创意 → 可玩成品（本次发布）
-- [ ] Phase B —— EAS build/submit、商店素材、广告
 
 ## 支持
 
