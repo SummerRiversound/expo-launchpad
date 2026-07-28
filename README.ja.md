@@ -14,7 +14,6 @@
   <img src="https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white" alt="TypeScript">
   <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License: MIT">
   <img src="https://img.shields.io/badge/PRs-welcome-brightgreen" alt="PRs welcome">
-  <a href="https://ko-fi.com/riversound"><img src="https://img.shields.io/badge/Ko--fi-Buy%20me%20a%20coffee-FF5E5B?logo=ko-fi&logoColor=white" alt="Support on Ko-fi"></a>
 </p>
 
 ## これは何か
@@ -52,7 +51,30 @@ Expo Launchpad は、アイデアを*プレイ可能な* iOS + Android アプリ
 
 ## デモ
 
-> 🚧 録画デモ（アイデア → シミュレーターで動くアプリ）は近日公開予定です。今のところは[仕組み](#仕組み)を参照してください。
+<p align="center">
+  <img src="assets/demo/feather-note.gif" alt="iOS シミュレーターで動作する Feather Note" width="260">
+</p>
+
+以下の 2 つのアプリはどちらもこのハーネスが生成しました —— アイデア → リサーチ → PRD → デザイントークン → 契約 →
+コード生成 → シミュレーター上で動く懐疑的な評価者。手作業でデザインした画面は 1 つもありません。
+
+**Feather Note** —— バードウォッチング図鑑アプリ（`--kind app`）。オフライン図鑑、地域別採集マップ、AI 種判別。
+
+<p align="center">
+  <img src="assets/demo/feather-note-index.png" width="240" alt="Field guide">
+  <img src="assets/demo/feather-note-map.png" width="240" alt="Survey map">
+  <img src="assets/demo/feather-note-profile.png" width="240" alt="Observer log">
+</p>
+
+**Grainatlas** —— 旅行記録アプリ（`--kind app`、韓国語ロケール）。階級配色の旅行マップ、タイムライン、オフライン専用保存。
+
+<p align="center">
+  <img src="assets/demo/grainatlas-map.png" width="240" alt="Trip map">
+  <img src="assets/demo/grainatlas-collection.png" width="240" alt="Trip collection">
+  <img src="assets/demo/grainatlas-detail.png" width="240" alt="Trip detail">
+</p>
+
+> 🚧 パイプライン全体のスクリーンキャスト（アイデア入力 → アプリ起動）は引き続き[ロードマップ](#ロードマップ)にあります。
 
 ## クイックスタート
 
@@ -130,9 +152,9 @@ generator はゲート付きの3つのサブフェーズ（`6a` → `6b` → `6c
 ## よくある質問
 
 **本当に今動くの？**
-正直に言うと：まだ **alpha** 段階です。パイプライン全体は構築済みで自己検証も通りますが、
-実際のアプリで end-to-end に一度通した実績はまだありません。ぜひ試して issue を送ってください
-—— そのフィードバックこそ今いちばん必要なものです。
+正直に言うと：まだ **alpha** 段階です。パイプライン全体は構築済みで自己検証も通り、上の[デモ](#デモ)
+の 2 つのアプリはどちらもこれが生成しました。まだできていないのは、アプリをストア公開まで運ぶことです。
+ぜひ試して issue を送ってください —— そのフィードバックこそ今いちばん必要なものです。
 
 **なぜ Expo なのか？**
 1つの TypeScript コードベースで iOS + Android の両方をカバーでき、evaluator が扱える
@@ -152,7 +174,8 @@ evaluator のシミュレーター実行には必要です（`npx expo run:ios` 
 
 - [x] Phase A —— アイデア → プレイ可能な成果物（今回のリリース）
 - [ ] Phase B —— EAS build/submit、ストア用アセット、広告
-- [ ] 録画デモ + サンプルアプリ
+- [x] README のサンプルアプリ
+- [ ] パイプライン全体のスクリーンキャスト
 
 ## サポート
 

@@ -14,7 +14,6 @@
   <img src="https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white" alt="TypeScript">
   <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License: MIT">
   <img src="https://img.shields.io/badge/PRs-welcome-brightgreen" alt="PRs welcome">
-  <a href="https://ko-fi.com/riversound"><img src="https://img.shields.io/badge/Ko--fi-Buy%20me%20a%20coffee-FF5E5B?logo=ko-fi&logoColor=white" alt="Support on Ko-fi"></a>
 </p>
 
 ## What is this
@@ -51,7 +50,30 @@ a simulator and studies screenshots before it ever says "done."
 
 ## Demo
 
-> 🚧 A recorded demo (idea → running app on a simulator) is coming soon. For now, see [How it works](#how-it-works).
+<p align="center">
+  <img src="assets/demo/feather-note.gif" alt="Feather Note running on an iOS simulator" width="260">
+</p>
+
+Two apps below were produced by this harness — idea → research → PRD → design tokens → contract →
+generated code → skeptical evaluator on a simulator. No screen was hand-designed.
+
+**Feather Note** — a birdwatching field guide (`--kind app`). Offline dex, region survey map, AI-assisted species ID.
+
+<p align="center">
+  <img src="assets/demo/feather-note-index.png" width="240" alt="Field guide">
+  <img src="assets/demo/feather-note-map.png" width="240" alt="Survey map">
+  <img src="assets/demo/feather-note-profile.png" width="240" alt="Observer log">
+</p>
+
+**Grainatlas** — a travel log (`--kind app`, Korean locale). Choropleth trip map, timeline, offline-only storage.
+
+<p align="center">
+  <img src="assets/demo/grainatlas-map.png" width="240" alt="Trip map">
+  <img src="assets/demo/grainatlas-collection.png" width="240" alt="Trip collection">
+  <img src="assets/demo/grainatlas-detail.png" width="240" alt="Trip detail">
+</p>
+
+> 🚧 A full pipeline screencast (typing the idea → the app booting) is still on the [roadmap](#roadmap).
 
 ## Quickstart
 
@@ -128,8 +150,9 @@ Companion read-only reporter: `/expo-launchpad-status` — phase, round, next ro
 ## FAQ
 
 **Does it really work yet?**
-Honestly: it's **alpha**. The full pipeline is built and self-validates, but it has not yet been run
-end-to-end to a shipped app. Try it and file issues — that feedback is exactly what it needs.
+Honestly: it's **alpha**. The full pipeline is built and self-validates, and it produced both apps in
+the [demo](#demo) above. What it has *not* done yet is carry an app all the way to a store release.
+Try it and file issues — that feedback is exactly what it needs.
 
 **Why Expo?**
 One TypeScript codebase → iOS + Android, with a fast simulator loop the evaluator can drive.
@@ -147,7 +170,8 @@ Yes for the evaluator's simulator run (`npx expo run:ios` needs Xcode).
 
 - [x] Phase A — idea → playable (this release)
 - [ ] Phase B — EAS build/submit, store assets, ads
-- [ ] Recorded demo + example app
+- [x] Example apps in the README
+- [ ] Full pipeline screencast
 
 ## Support
 

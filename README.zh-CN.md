@@ -14,7 +14,6 @@
   <img src="https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white" alt="TypeScript">
   <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License: MIT">
   <img src="https://img.shields.io/badge/PRs-welcome-brightgreen" alt="PRs welcome">
-  <a href="https://ko-fi.com/riversound"><img src="https://img.shields.io/badge/Ko--fi-Buy%20me%20a%20coffee-FF5E5B?logo=ko-fi&logoColor=white" alt="Support on Ko-fi"></a>
 </p>
 
 ## 这是什么
@@ -51,7 +50,30 @@ Expo Launchpad 是一个 Claude Code 插件，能把一个创意变成*可玩的
 
 ## 演示
 
-> 🚧 录屏演示（从创意到模拟器中运行的应用）即将推出。目前请先参考[工作原理](#工作原理)。
+<p align="center">
+  <img src="assets/demo/feather-note.gif" alt="在 iOS 模拟器中运行的 Feather Note" width="260">
+</p>
+
+下面两个应用都由本 harness 生成 —— 创意 → 调研 → PRD → 设计 token → 契约 →
+代码生成 → 在模拟器上运行的怀疑型评估器。没有任何一屏是手工设计的。
+
+**Feather Note** —— 观鸟图鉴应用（`--kind app`）。离线图鉴、区域采集地图、AI 物种识别。
+
+<p align="center">
+  <img src="assets/demo/feather-note-index.png" width="240" alt="Field guide">
+  <img src="assets/demo/feather-note-map.png" width="240" alt="Survey map">
+  <img src="assets/demo/feather-note-profile.png" width="240" alt="Observer log">
+</p>
+
+**Grainatlas** —— 旅行记录应用（`--kind app`，韩语界面）。分级配色行程地图、时间线、纯离线存储。
+
+<p align="center">
+  <img src="assets/demo/grainatlas-map.png" width="240" alt="Trip map">
+  <img src="assets/demo/grainatlas-collection.png" width="240" alt="Trip collection">
+  <img src="assets/demo/grainatlas-detail.png" width="240" alt="Trip detail">
+</p>
+
+> 🚧 完整流程录屏（输入创意 → 应用启动）仍在[路线图](#路线图)中。
 
 ## 快速开始
 
@@ -128,8 +150,8 @@ generator 会分 3 个把关的子阶段（`6a` → `6b` → `6c`）构建，每
 ## 常见问题
 
 **现在真的能用了吗？**
-说实话：目前还是 **alpha** 阶段。整套流水线已经搭建完成，也能自我校验，但还没有真正跑过一次
-从创意到应用发布的完整 end-to-end 流程。欢迎试用并提交 issue —— 这正是现在最需要的反馈。
+说实话：目前还是 **alpha** 阶段。整套流水线已经搭建完成，能自我校验，上面[演示](#演示)中的两个应用
+都是它生成的。尚未做到的是把一个应用一路推到商店上架。欢迎试用并提交 issue —— 这正是现在最需要的反馈。
 
 **为什么选择 Expo？**
 一套 TypeScript 代码库即可覆盖 iOS + Android，还有一个 evaluator 能驱动的快速模拟器循环。
@@ -147,7 +169,8 @@ evaluator 的模拟器运行环节需要（`npx expo run:ios` 依赖 Xcode）。
 
 - [x] Phase A —— 创意 → 可玩成品（本次发布）
 - [ ] Phase B —— EAS build/submit、商店素材、广告
-- [ ] 录屏演示 + 示例应用
+- [x] README 示例应用
+- [ ] 完整流程录屏
 
 ## 支持
 

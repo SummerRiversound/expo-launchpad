@@ -14,7 +14,6 @@
   <img src="https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white" alt="TypeScript">
   <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License: MIT">
   <img src="https://img.shields.io/badge/PRs-welcome-brightgreen" alt="PRs welcome">
-  <a href="https://ko-fi.com/riversound"><img src="https://img.shields.io/badge/Ko--fi-Buy%20me%20a%20coffee-FF5E5B?logo=ko-fi&logoColor=white" alt="Support on Ko-fi"></a>
 </p>
 
 ## 이게 뭔가요
@@ -51,7 +50,30 @@ Claude Code 플러그인입니다. 게이트가 걸린 단계별로 기획하고
 
 ## 데모
 
-> 🚧 녹화된 데모(아이디어 → 시뮬레이터에서 실행되는 앱)는 준비 중입니다. 지금은 [동작 방식](#동작-방식)을 참고하세요.
+<p align="center">
+  <img src="assets/demo/feather-note.gif" alt="iOS 시뮬레이터에서 실행 중인 깃털노트" width="260">
+</p>
+
+아래 두 앱 모두 이 하네스가 만들었습니다 — 아이디어 → 리서치 → PRD → 디자인 토큰 → 계약 →
+코드 생성 → 시뮬레이터에서 도는 회의적 평가자. 손으로 디자인한 화면은 하나도 없습니다.
+
+**깃털노트(Feather Note)** — 탐조 도감 앱(`--kind app`). 오프라인 도감, 지역별 채집 지도, AI 종 판별.
+
+<p align="center">
+  <img src="assets/demo/feather-note-index.png" width="240" alt="Field guide">
+  <img src="assets/demo/feather-note-map.png" width="240" alt="Survey map">
+  <img src="assets/demo/feather-note-profile.png" width="240" alt="Observer log">
+</p>
+
+**Grainatlas** — 여행 기록 앱(`--kind app`, 한국어). 단계 색상 여행 지도, 타임라인, 오프라인 전용 저장.
+
+<p align="center">
+  <img src="assets/demo/grainatlas-map.png" width="240" alt="Trip map">
+  <img src="assets/demo/grainatlas-collection.png" width="240" alt="Trip collection">
+  <img src="assets/demo/grainatlas-detail.png" width="240" alt="Trip detail">
+</p>
+
+> 🚧 파이프라인 전체 화면 녹화(아이디어 입력 → 앱 부팅)는 아직 [로드맵](#로드맵)에 있습니다.
 
 ## 빠른 시작
 
@@ -129,9 +151,9 @@ generator는 게이트가 걸린 3개의 서브 단계(`6a` → `6b` → `6c`)�
 ## 자주 묻는 질문
 
 **정말로 지금 동작하나요?**
-솔직히 말하면: **alpha** 단계입니다. 전체 파이프라인은 구현되어 있고 자체 검증도 통과하지만,
-아직 실제 앱으로 end-to-end 실행을 거친 적은 없습니다. 직접 사용해보고 이슈를 남겨주세요 —
-그런 피드백이 지금 가장 필요합니다.
+솔직히 말하면: **alpha** 단계입니다. 전체 파이프라인은 구현되어 있고 자체 검증도 통과하며, 위
+[데모](#데모)의 두 앱을 실제로 만들어냈습니다. 아직 해내지 못한 건 앱을 스토어 출시까지 끌고 가는
+일입니다. 직접 사용해보고 이슈를 남겨주세요 — 그런 피드백이 지금 가장 필요합니다.
 
 **왜 Expo인가요?**
 하나의 TypeScript 코드베이스로 iOS + Android를 모두 커버하고, evaluator가 다룰 수 있는 빠른
@@ -151,7 +173,8 @@ evaluator의 시뮬레이터 실행에는 필요합니다(`npx expo run:ios`는 
 
 - [x] Phase A — 아이디어 → 플레이 가능한 결과물 (이번 릴리스)
 - [ ] Phase B — EAS build/submit, 스토어 에셋, 광고
-- [ ] 녹화된 데모 + 예제 앱
+- [x] README 예제 앱
+- [ ] 파이프라인 전체 화면 녹화
 
 ## 후원
 
