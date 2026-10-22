@@ -6,7 +6,7 @@
       "name": "expo-launchpad",
       "source": "./",
       "description": "Idea-to-playable Expo (RN+TS) app/game harness — research→plan→design→contract→generator⇄evaluator, skeptical QA.",
-      "version": "0.1.0"
+      "version": "0.1.1"
     }
   ]
 }
