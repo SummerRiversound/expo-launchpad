@@ -100,7 +100,7 @@ When `current_round` is greater than 1:
 Run from the workspace root:
 
 ```bash
-if [ -d "<app_slug>/app" ]; then
+if [ -f "<app_slug>/package.json" ]; then
   echo "project already exists — reusing (skipping create-expo-app)"
 else
   npx create-expo-app@latest <app_slug>
@@ -108,12 +108,13 @@ fi
 cd <app_slug>
 ```
 
-The current default template is TypeScript + Expo Router (matches `docs/harness-protocol.md`'s
-project layout, which puts routes under `app/`). Verify `tsconfig.json` and `app/_layout.tsx`
-exist after creation; if an older `create-expo-app` version produced a plain JavaScript or
-non-router template instead, remove the directory and retry passing the Expo Router TypeScript
-template explicitly (consult `npx create-expo-app@latest --help` for the current flag name — the
-template name/flag has changed across Expo SDK releases).
+The current default template is TypeScript + Expo Router. Verify `tsconfig.json` and a root layout
+exist after creation: `src/app/_layout.tsx` (SDK 55+ templates) or `app/_layout.tsx` (older
+templates). If an older `create-expo-app` version produced a plain JavaScript or non-router
+template instead, remove the directory and retry passing the Expo Router TypeScript template
+explicitly (consult `npx create-expo-app@latest --help` for the current flag name — the template
+name/flag has changed across Expo SDK releases). This harness keeps routes under a root `app/`
+(`docs/harness-protocol.md`'s project layout); 6a.4 removes a template `src/`.
 
 **Idempotency:** `create-expo-app` fails if the target directory is non-empty, which would break a
 resume or a re-run of round 1. The guard above makes 6a.1 safe to re-enter — it reuses an existing
@@ -160,9 +161,17 @@ rm -rf app/(tabs) components/HelloWave.tsx components/ParallaxScrollView.tsx \
        components/Collapsible.tsx __tests__/
 ```
 
+SDK 55+ templates scaffold the demo under `src/` instead (`src/app/`, `src/components/`, …).
+Delete it as well: Expo Router serves `src/app` whenever that directory exists, so a leftover
+`src/app` would hide every route this harness writes under the root `app/`.
+
+```bash
+rm -rf src/
+```
+
 (Adjust the exact list to whatever the installed template version actually scaffolded — the goal
 is an empty `app/` route tree and no leftover demo components before 6a.6/6a.7 write the real
-ones.) Keep `app/_layout.tsx` — it is rewritten, not deleted.
+ones.) Keep `app/_layout.tsx` if the template created one — it is rewritten, not deleted.
 
 ### 6a.5 Copy shared config templates
 
